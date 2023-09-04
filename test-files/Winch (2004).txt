@@ -1,0 +1,590 @@
+                                                                                                                        INTERNATIONAL JOURNAL OF
+
+
+                                                                                                                        PROJECT
+                                                                                                                        MANAGEMENT
+                                     International Journal of Project Management 23 (2005) 141–149
+                                                                                                               www.elsevier.com/locate/ijproman
+
+
+
+
+                            What do construction project planners do?
+                                           Graham M. Winch a,*, John Kelsey b
+              a
+                Centre for Research in the Management of Projects, University of Manchester, P.O. Box 88, Manchester M60 1QD, UK
+b
+    Centre for Research in the Management of Projects, School of Construction and Project Management, The Bartlett University College London, UK
+
+                              Received 8 July 2003; received in revised form 30 January 2004; accepted 15 June 2004
+
+
+
+
+Abstract
+
+    Construction project planning is receiving growing attention as the limitations of formal deterministic planning are becoming
+more widely recognised. In particular, the last planner and critical chain approaches are diﬀusing rapidly. However, little of this
+debate has been informed by empirical examination of what construction project planners actually do. The research reported here
+draws on three diﬀerent research projects. One on the overall context of construction project planning, and two focused on require-
+ments capture for the virtual construction site system. For the later project, 18 construction planners were interviewed on their daily
+practice. The results show that construction planning for principal contractors is more about negotiation with other interested par-
+ties and rapid decision-making based on heuristics than detailed analysis.
+Ó 2004 Elsevier Ltd and IPMA. All rights reserved.
+
+Keywords: Construction project planning: Critical path analysis: Tendering
+
+
+
+
+1. Introduction                                                              views with 18 construction planners from ﬁve leading
+                                                                             UK ﬁrms before some conclusions are drawn.
+   There has been considerable debate over the last dec-
+ade or so on the eﬀectiveness of construction project
+planning. However, there is remarkably little research                       2. Recent debates in construction project planning
+into what construction project planners actually do.
+The research reported here was undertaken as part of                            In an early paper, Laufer and Tucker [3] provide a
+the requirements capture process for the development                         critique of (US) construction planning. They argue that:
+of the VIRCON system (VCS) as a strategic decision
+support tool for construction project planners. This lar-                     The planning and evaluation of planning processes
+ger research project is reported elsewhere [1]. This paper                     are non-existent.
+will explore the evidence on the role and practice of pro-                    There is over-emphasis on critical path methods.
+ject planners that underpinned the development of the                         Planners lack construction experience.
+VCS. In so doing, it will address what Laufer and his                         Planners have poor information gathering methods.
+colleagues [2] identify as the operation/systems analysis                     Planning is control-oriented instead of action-
+level of construction scheduling. The paper will ﬁrst re-                      oriented.
+view some of the recent debates on construction project                       Plans are poorly presented with overly-complex
+planning. It will then report the results from our inter-                      information.
+
+    *
+      Corresponding author.                                                     In a subsequent paper, Laufer and his colleagues [4]
+     E-mail address: g.winch@umist.ac.uk (G.M. Winch).                       look at the deﬁnition and allocation of planning work.
+
+0263-7863/$30.00 Ó 2004 Elsevier Ltd and IPMA. All rights reserved.
+doi:10.1016/j.ijproman.2004.06.002
+142                     G.M. Winch, J. Kelsey / International Journal of Project Management 23 (2005) 141–149
+
+They found that there was no clear system used, and                  of course, does not apply where there are systematic
+planning was done in a multiplicity of ways. Laufer                  biases in estimating.
+and Tucker [5] discuss the problem of who should do
+construction planning and when they should do it. The
+specialist planner has the time to do the work but                   3. Responses to the critiques of construction project
+incomplete practical knowledge. The line manager has                 planning
+the practical knowledge but does not have the quality
+time to carry out the task. The specialist planner has bet-             These critiques have stimulated a number of diﬀerent
+ter strategic decision-making skills than the short-term             responses. Goldratt [9] argued that there has been noth-
+decision-making focus of the line manager. Line manag-               ing new in project management in 40 years, and advo-
+ers see the delegation of key decision-making to another             cates the critical chain method (CCM). This addresses
+as a threat to their position. These problems are also               two of the key problems of CPM – the inherent uncer-
+conﬁrmed in a wider project management study [6]                     tainty of task durations and the associated opportunistic
+and can result in:                                                   behaviour in establishing the true duration of tasks, and
+                                                                     the resourcing of tasks. In CCM, the critical chain is the
+ The planner preparing a plan which has incomplete                  longest resource constrained path through the network,
+  information and inadequate decision-making                         theorised as a constraint to be elevated. Thus a critical
+  authority.                                                         chain looks like a critical path, but it includes resourcing
+ The line manager treating such plans as merely an                  in the dependencies.
+  irrelevant forecast prepared by another.                              The conceptual shift from critical path to critical
+                                                                     chain by including resourcing issues in the latter might
+   For the whole project process, the ability to inﬂuence            be considered simply a technical development, moving
+cost diminishes rapidly over time, the greatest inﬂuence             on from the resource levelling approaches which are well
+being at the design phase. However the greater the time              established. However, the elevation of the constraint
+between plan and implementation, the greater is the var-             introduces a much more radical aspect. This elevation
+iance of actual schedule and budget against plan. De-                starts from two observations:
+tailed planning of activities planned to be executed far
+into the future – say more than three months – is futile.             That actual duration for any planned task is
+This is because:                                                       unknown, but can be assumed to be distributed as a
+                                                                       gamma distribution with the median task duration
+ there are uncertainties which cannot be quantiﬁed;                   greater than the mode.
+ stochastic modelling does not identify the cause of                 Existing estimates of expected task durations are pad-
+  variation;                                                           ded because they include safety time, greatly extend-
+ forecasting models extrapolate from past trends                      ing the length of the critical path.
+  which may not be valid for the future.
+                                                                        In a situation where actual task duration is uncertain,
+   Theoretically, the binomial theorem [7,8] supports                and managers are held accountable for meeting stated
+this claim. The probability of an event occurring in re-             durations (deadlines), then task duration estimates are
+peated trials – where the event may be, for instance, a              going to be at the worst case end of the distribution, oth-
+task running 10% over its planned duration – is given                erwise managers risk overrunning their deadlines. CCM
+by the binomial distribution. This shows that the per-               instead proposes that the average estimated duration
+centage error of the estimate of the mean performance                should be used. An inevitable result of this is that man-
+on the task as a ratio of the percentage error for the               agers will overrun their planned durations half the time.
+mean durations of all tasks in the work breakdown                    This problem is solved by removing from managers the
+structure (WBS) is inversely proportional to the square              absolute responsibility to meet task-level duration dead-
+root of the number of tasks, for a discrete sequence of              lines, providing incentives for early completion instead.
+tasks. Thus for a 52 week project to be estimated at                 This approach was tried on the A13 road project in east
+±10% accuracy for handover date, a task with a dura-                 London with great success [10].
+tion of 2 weeks should only be planned with a ±50%                      As a result of these considerations, something of a
+accuracy, because some tasks will exceed their planned               consensus is emerging that construction planning has
+duration and others will not require it. This calculation,           to be a much more decentralised activity in order to
+therefore, deﬁnes the lowest planning unit for the WBS.              cope with the inherently uncertain nature of task dura-
+The larger the number of tasks in the WBS, the less                  tion. This issue is addressed directly by the developers
+point there is in planning each task accurately, because             of the ‘‘last planner’’ approach [11] who argue that con-
+positive and negative variances will even themselves                 struction planners should make only ‘‘quality assign-
+out at the level of the project as a whole. This argument,           ments’’ where tasks:
+                       G.M. Winch, J. Kelsey / International Journal of Project Management 23 (2005) 141–149                  143
+
+ are suﬃciently well deﬁned,                                             The aim of this paper, is to contribute to this limited
+  – to be co-ordinated with other work and                             empirical literature on planning practice. It will do this
+  – for the inputs to be identiﬁed and assembled,                      in two stages. First, the overall context of construction
+ are ready to start because,                                          project planning will be explored through a single pro-
+  – all materials are available,                                       ject case study which shows how the plannerÕs work is
+  – design is complete,                                                located within a hierarchy of plans on the project. Sec-
+  – precedent works are complete,                                      ond, data from interviews with 18 experienced planners
+ have priority in the critical path for delivery to the               will be reported in order to deepen our understanding of
+  customer,                                                            contemporary planning practice in the UK construction
+ are commensurate in scale with the available labour                  industry. The research reported in this paper will, there-
+  for the coming week,                                                 fore, help us to ﬁll in some of these gaps in our current
+ are carried out within a system where the causes of                  knowledge on construction planning practice.
+  incomplete or poor quality assignments are investi-
+  gated and identiﬁed.
+                                                                       4. The context of construction project planning
+   They argue that tasks not meeting these criteria
+should be deferred (even if this means a short-term loss                  Fig. 1 is developed from a case study of a major hos-
+of output against schedule) and analyse the beneﬁts                    pital project in west London using a construction man-
+from following this course of action which they term                   agement procurement route, and shows the overall
+as ÔshieldingÕ production.                                             construction planning process. Italicized boxes represent
+   Despite the fundamental important of these debates                  contractually binding schedules. The research was ﬁ-
+for construction project management, most recent re-                   nanced by the (then) Science and Engineering Research
+search has gone into the reﬁnement of existing planning                Council. The clientÕs project manager develops the cli-
+tools, rather than research into exploring the organisa-               entÕs strategic programme, which drives the tender pro-
+tional context of construction planning. Exceptions to                 gramme for the procurement of the resource bases
+this generalisation include the A13 and study [10] and                 such as design consultants and construction manager,
+Laufer [6] who investigated involvement in the planning                and also the architectÕs design programme. The contrac-
+process, and found that it is an essentially collaborative             tually binding agreement between the client and con-
+process involving line managers, designers, and planners               struction manager is the master programme. The
+at various stages of the process. Faniran and his col-                 construction managerÕs project managers then prepare
+leagues [12] investigated the optimum allocation of re-                the target construction programme which guides the pro-
+sources to the planning process, concluding that both                  curement of trade packages, and the parcel documents
+too little planning and too much planning were factors                 programme which drives the production of drawings
+leading to poor project performance.                                   by the architect. This last schedule is non-contractual,
+
+
+                                                         B client’s strategic
+                           A tender programme
+                                                            programme
+
+
+                                                                                        architect’s design
+                                                        summary programme
+                                                                                           programme
+
+
+
+                                                         master programme
+
+
+                                       C target construction               parcel documents
+                                            programme                         programme
+
+
+                                          tender restraints                     procurement
+                                            programme                           programme
+
+
+                                        D works contractor’s               contract restraints
+                                           programme                         programme
+
+
+                     Fig. 1. The construction project planning hierarchy. Source: Developed from: [8] Figure 11.3.
+144                    G.M. Winch, J. Kelsey / International Journal of Project Management 23 (2005) 141–149
+
+but can be used in claims for delays against the client             However, for the planners the time frame was similar to
+caused by the non-delivery of drawings. Within the tar-             the traditional method. Those involved in two-stage
+get programme, trade contractors are given ‘‘windows’’              planning reported that the plan was a signiﬁcant factor
+for the execution of their responsibilities on site in the          in progressing beyond the ﬁrst stage as a demonstration
+tender restraints programme, and these are formally                 of competence was the paramount selection criterion at
+agreed in the works contractorsÕ programmes. Within                 this stage.
+those, the trade contractors then schedule task execution              Under construction management procurement, plan-
+at the level of work breakdown structure (WBS) that                 ners tended to be brought in earlier in the process. The
+suits them which is communicated to the construction                principal contractors were also involved in partnered
+manager in the contract restraints programme. In order              contracts and PFI schemes where the tender periods
+to gain more bargaining power, construction managers                were considerably longer (3–6 months and more). On
+may not reveal the master programme to the trade con-               large civil engineering projects, the tender periods were
+tractors, and provide a target construction programme               also longer, averaging around three months. However,
+that is signiﬁcantly tighter than the master programme,             planners often work simultaneously on several tenders,
+so as to buﬀer the completion date to ensure a satisﬁed             and so the actual working time which is available to
+client even if the works contractors programme slips                them for preparing each tender submission is substan-
+(interviews 22/05/89; 30/09/89).                                    tially less than the average tender period.
+                                                                       Planners tended to be overwhelmed with informa-
+                                                                    tion. They received large amounts of information that
+5. What do planners do? current practice in construction            was not relevant to their role, and spent considerable
+project planning                                                    amounts of time sifting through it. As might be ex-
+                                                                    pected, this problem particularly aﬀected the planners
+   In order to explore further the reality of construction          working for trade contractors. On the other hand, the
+project planning semi-structured interviews were con-               quality of much of the information received was poor.
+ducted between July and December 2000 with 18 experi-               For instance, M & E drawings sometimes did not allow
+enced planners from ﬁve leading UK construction ﬁrms.               for any secondary steel support work, or installation
+Interviews came from the principal contracting and                  space for pipework. Similarly, some designs showed a
+trade contracting divisions of those companies. The                 lack of understanding of the space required by piling
+two packages covered by the trade contracting subsidi-              plant, the most common problem being the siting of
+aries were piling and mechanical and electrical services.           works too near conﬁned boundaries making it impossi-
+The research was funded by two EPSRC awards – GR/                   ble for plant to access the working area with suﬃcient
+N/02917 and GR/R/51452 – and is more fully reported                 working room.
+in [13].                                                               The methods for dealing with the uncertainty caused
+   Most of the planners interviewed were currently in-              by design information deﬁciencies were:
+volved in planning at the pre-tender stage including
+assembly and presentation of the tender documentation                Guess the missing information based on experience
+– in other words, activity A in Fig. 1. About half of                 and past job records.
+those were also involved at the post-tender pre-construc-            Qualify the submitted tender.
+tion stage – in other words, activity C in Fig. 1. Only a            Assess the risk posed by the missing information and
+few were further involved during the site works. Gener-               adjust the risk premium accordingly.
+ally, although a number of the interviewed planners had              Take a strict contractual stance on site with regards
+on-site experience the typical pattern is that a planner              to negotiating the cost of variations to the tender
+works either at the pre-tender, pre-execution stages or               drawings/speciﬁcations/scope of works.
+on site but not simultaneously. The exceptions tend to
+be where planners work for some time on a single large                 Table 1 presents the documents produced by the
+project. In such cases it may make sense (from the em-              planner as part of the tender team. The ﬁrst four
+ployerÕs point of view) for their work to carry on to               items were speciﬁcally mentioned by the interviewer,
+the execution stage.                                                while the others were spontaneously mentioned by
+   For traditional contracting by single stage tendering            the informant. Those items only mentioned by one
+the period for the preparation of the construction plan             planner have been omitted as being speciﬁc to that
+was around 4–6 weeks for larger contracts and 3–4                   plannerÕs type of work. One informant reported that
+weeks for smaller ones. The post-tender to start on site            for partnered contracts, he was prepared to list all
+period showed somewhat greater variation from 2 to                  the risk items in the tender with prices attached –
+13 weeks. For two stage tendering, the ﬁrst stage was               a sort of risk Ôshopping listÕ. It was then up to the cli-
+similar to the single stage tender period but it was only           ent to decide which risk items it wanted to take on
+at the subsequent stage that a price had to be presented.           board.
+                            G.M. Winch, J. Kelsey / International Journal of Project Management 23 (2005) 141–149                   145
+
+Table 1
+Construction plannersÕ deliverable outputs
+                                                             Number of mentions
+                                                             Internal only                 External partnered only             External
+Non-ﬁnancial information produced at tender stagementioned by more than one planner
+Items mentioned by the interviewer
+Method statement                                                                                                               18
+Programme bar chart                                                                                                            18
+Critical path analysis                                    3                                                                     8
+Risk assessment                                           7                                1                                    3
+Additional items mentioned by the planners
+Preliminaries scheme/resources                                                                                                  5
+Site mobilisation/layout drawings                                                                                               5
+Design programme (for D & B)                                                                                                    6
+Design information requirement dates                                                                                            5
+Procurement programme                                                                                                           6
+Team details/cvÕs/organigrammes                                                                                                 7
+Record/references of previous experience                                                                                        3
+Buildability/programme/value eng. options                 1                                                                     3
+Quality assurance plans and procedure                                                                                           6
+Health and safety plans and procedure                                                                                           7
+Environmental protection procedures                                                                                             3
+Phased work location drawings                             8                                                                     4
+Overall resource schedules                                                                                                      3
+
+
+
+
+Table 2
+Domain- speciﬁc knowledge acquired
+Type of learning mentioned by more than one planner                                                                                 No
+Better understanding of site processes and works contractors                                                                        7
+Better understanding of M & E services and co-ordination with other trades                                                          6
+Development of better communication skills (including listening)                                                                    4
+Experience through working on a wide range of projects                                                                              3
+Better understanding of contracts and tender processes                                                                              3
+Development of the ability to anticipate problems                                                                                   2
+Better understanding of the 3D/spatial aspects of the work (piling planners)                                                        2
+Development of a feel for task outputs and durations                                                                                2
+Better understanding of supply chain management                                                                                     2
+
+
+
+
+    Table 2 reports the domain speciﬁc knowledge plan-                           The Primavera users particularly praised its rigorous
+ners believe that they have acquired which enables them                      and disciplined task logic. The Power Project users crit-
+to solve planning problems better than inexperienced                         icised it for the same reason! The problem is that Pri-
+planners. Older planners were critical of (some) younger                     mavera requires a substantial set-up time and
+planners. One felt that two generations of planners (tak-                    considerable eﬀort in maintenance and amendment.
+ing a generation at 15 years) had now appeared who had                       Amending one task in Primavera may force detailed
+little site experience. The ﬁrst generation of ÔunsitedÕ                     adjustments of other tasks dependent on the amended
+planners was now teaching the second. Another felt that                      task. Power Project will allow the last minute input of
+the younger planners were too technology driven instead                      an ÔillogicalÕ task sequence which the planner believes
+of concentrating on developing a basic understanding of                      will actually work but for which they do not have the
+construction problems.                                                       time to re-input a new set of task dependencies. This
+    Fig. 2 shows the preferred planning software related                     is vital due to the very short tender periods identiﬁed
+to the value of recent contracts handled by each planner.                    above. According to our informants who use it, Power
+It is clear that Primavera is preferred for larger value                     Project is easy to learn and easy to use with excellent
+contracts and Power Project for smaller ones. A thor-                        presentation facilities. Users of both packages agreed
+ough review of the capabilities of these and other Criti-                    that Primavera does require a signiﬁcant learning peri-
+cal Path Analysis software packages can be found in                          od. The informants who preferred Primavera software
+[14].                                                                        to Power Project also tended to make intensive use of
+146                                                                 G.M. Winch, J. Kelsey / International Journal of Project Management 23 (2005) 141–149
+
+
+                                                                   160
+
+
+
+
+                       Average value of last five contracts (£m)
+
+
+
+
+                                                                                                                                                                               Primavera / Power Project
+                                                                   140
+
+                                                                   120
+
+
+
+
+                                                                                                                                                                                                                       Power Project
+                                                                              None / Power Project
+
+
+
+
+                                                                                                                                     Power Project / Excel
+                                                                   100
+
+
+
+
+                                                                                                                                                                                                           Primavera
+                                                                   80
+
+
+
+
+                                                                                                     Power Project
+                                                                                                                     Power Project
+                                                                                                                                     None / Excel
+                                                                   60                                                                                        Power Project
+
+                                                                   40                                                                                                                                                                  Primavera
+
+                                                                   20
+
+                                                                     0
+                                                                         0      1                      2              3                4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
+                                                                                                                                        Rank by average value of last five contracts
+
+                                                                             Fig. 2. Decision support tools used by construction planners. Source: [13].
+
+
+critical path analysis, as opposed to restricting them-                                                                                                                they have to negotiate ÔrobustlyÕ with these actors on
+selves to Gantt charts.                                                                                                                                                each contract, they also have to maintain a longer work-
+                                                                                                                                                                       ing relationship which may serve to moderate their
+                                                                                                                                                                       negotiating behaviour.
+6. The construction planning process                                                                                                                                      The key diﬀerence between the situation for principal
+                                                                                                                                                                       contractors and works contractors lies in those actors in
+   The approach to process mapping deployed for this                                                                                                                   the ÔconstrainerÕ category, because they include other
+research is a ‘‘business’’ one derived from the work of                                                                                                                works contractors carrying out works precedent or con-
+Rummler and Brache [15], rather than an ‘‘engineering’’                                                                                                                current in time or space. Whereas for the principal con-
+one deploying IDEF0 (see [16] for this distinction).                                                                                                                   tractor, constrainers are known, for the works
+Table 3 categorises the four types of actor in the con-                                                                                                                contractor these may be unknown at the time of tender-
+struction planning process. Clearly the client and con-                                                                                                                ing (depending on the construction procurement method)
+sultants initiate the process through the invitation to                                                                                                                and therefore no negotiation with them is possible. This
+tender. The suppliers and constrainers determine the                                                                                                                   makes it all the more important that the principal con-
+ability of the principal contractor to deliver the clientÕs                                                                                                            tractorÕs planner allows a suﬃcient distribution of space
+requirements, the former through their capacity and                                                                                                                    and other site resources to allow each works contractor
+the latter by the extent of their agreement to allow the                                                                                                               to do their work unhindered.
+contractor to use the most eﬃcient construction proc-                                                                                                                     Fig. 3 shows the overall pre-contract construction
+esses where these impinge on their particular domain.                                                                                                                  planning process for a principal contractor highlighting:
+The principal contractorÕs planning team mediates be-
+tween these other actors to form a viable plan. The inter-                                                                                                              The interdependency between construction site pro-
+action with these actors also reveals a potential conﬂict                                                                                                                gramme planning and design/procurement pro-
+between short and long-term goals for planners. While                                                                                                                    gramme planning.
+
+
+Table 3
+Principal contractorsÕ pre-tender construction planning process actors
+Role                                                      Description                                                                                                                                          Actors
+Customer                                                  Ordering built product, representing clientÕs interests                                                                                              Client, project manager, architect, principal quantity
+                                                          and supplying design information not controlled by                                                                                                   surveyor, structural and M&E engineers
+                                                          the contractor
+Performer                                                 Planning construction as part of tender oﬀer to supply                                                                                               Principal contractorÕs planning team responsible to
+                                                          built product                                                                                                                                        senior management
+Supplier                                                  Providing contractor with information on supply                                                                                                      Trusted works contractors and specialist material
+                                                          chain delivery capabilities                                                                                                                          suppliers
+Constrainer                                               Controllers of the site and its environment who have                                                                                                 Client and/or clientÕs landlord utilities, adjoining
+                                                          the power to block or restrict construction operations                                                                                               owners, police, regulatory/highway authorities
+                         G.M. Winch, J. Kelsey / International Journal of Project Management 23 (2005) 141–149                  147
+
+
+                                                              Total                 Consultant
+                                                                      Contractor’s
+                             STAGE Construct’n               Design                   Design
+                                               Procurem’t               Design
+                                   Programme              Information              Information
+                                               Programme              Droduction
+                        ACTOR       Planning                required                 required
+                                                                      Programme
+                                                              dates                    dates
+
+                       Consultant
+
+                       Principal
+                       Contractor
+                       Package
+                       Contractor
+                       Material
+                       Supplier
+
+                       Constrainers
+
+
+                       Key                                Decision               Action          Consultation
+
+
+                         Fig. 3. The principal contractorÕs pre-contract construction planning process. Source: [13].
+
+
+
+ The general sequence for determining the dates when                     1.5 Informal negotiation with supply chain repre-
+  design information is required from actors outside the                      sentatives (and/or experienced in-house opera-
+  principal contractorÕs supply chain.                                        tions manager) to conﬁrm or amend steps
+ The substantial involvement of supply chain actors.                         1.1–1.4
+ The important decision role of constrainer actors.
+                                                                             Stage 2 – identiﬁcation of the overall procurement
+   The sequence of action which is being planned is                       programme
+clearly of the general form
+Design ! Procure ! Construct                                              2.1 Identiﬁcation of all key supply chain actors includ-
+                                                                              ing those excluded from on-site construction
+However the actual programme planning process has to                          processes.
+be in reverse – or ‘‘backtimed’’ – due to the driving role                2.2 Identiﬁcation of lead times for key supply items and
+in planning of the clientÕs strategic programme, box B in                     works contractor tendering.
+Fig. 1 as follows:                                                        2.3 Planning of sequential logic of procurement to sup-
+Construct ! Procure ! Design                                                  port construction programme.
+                                                                          2.4 Informal negotiation with supply chain representa-
+In a very important sense, from a planning perspective,                       tives to conﬁrm or amend steps 2.1–2.3.
+design and procurement are merely inputs into the exe-
+cution process on site which delivers the asset to the cli-                  Stage 3 – identiﬁcation of design information delivery
+ent ready for exploitation.                                               dates required for procurement and construction
+   This can be illustrated by the following sequence of pro-
+gramme planning, as identiﬁed in the horizontal axis of Fig. 3.           3.1 Identify all detailed design requirement dates (from
+                                                                              all sources) to support construction and procure-
+   Stage 1 – identiﬁcation of the overall site construction                   ment processes
+programme
+
+1.1 Breakdown of identiﬁed construction processes into                       Stage 4 – identiﬁcation of the contractorÕs design
+    packages according to supply chain capacities.                        programme
+1.2 Planning of sequential logic of processes/packages
+    in time and space.                                                    4.1 Identiﬁcation of temporary works design require-
+1.3 Assessment of common site resources and tempo-                            ments.
+    rary/enabling works required to service direct con-                   4.2 Identiﬁcation of supply chain design responsibili-
+    struction processes.                                                      ties.
+1.4 Negotiation with constrainers (as deﬁned in Table                     4.3 Identiﬁcation of supply chain information require-
+    3) to allow certain construction operations.                              ments to carry out design activities.
+148                    G.M. Winch, J. Kelsey / International Journal of Project Management 23 (2005) 141–149
+
+4.4 Identiﬁcation of clientÕs consultantsÕ lead times               tional level. Total project review is necessary to establish
+    required to approve design data for which the con-              the reasons for project execution shortcomings. How-
+    tractor is responsible.                                         ever, the actors most able to contribute to this process
+4.5 Planning of sequential logic of contractorÕs design             are those with the least motivation to expose their own
+    activities to support Stage 3 above.                            errors.
+                                                                        Informants from the principal contractors were al-
+   Stage 5 – identiﬁcation of the detailed design data              most united in their approach to trade package identiﬁ-
+requirement dates from clientÕs consultants                         cation. This view was that the packages should be split
+                                                                    according to the known trade capacities of individual
+5.1 From Stages 3 and 4 above computation of all out-               contractors. Principal contractorsÕ planners can only
+    line/detailed design requirement dates in order to              realistically plan down to the works package level (bro-
+    support contractorÕs design, procurement and con-               ken down further into the main package components) in
+    struction programmes (the output of which may                   the target construction programme shown at C in Fig. 1.
+    require repetition of Stages 1–4 above)                         It is the trade contractorsÕ planners in the works con-
+                                                                    tractors programme shown in D in Fig. 1 who have to
+   The output from stages 1.2, 2.3, 4.5 and 5.1 will form           turn these packages into a WBS to yield a sequence of
+part of the tender submission. As indicated under Stage             individual tasks through time. This practice vitiates
+5, this is an iterative process and may require several             against the recommendations of those arguing for the
+passes before a viable integrated programme can be                  ‘‘clustering’’ of trades into technologically deﬁned sub-
+produced.                                                           systems – see Winch [8] chapter 7 for a review.
+   Up to detailed design stage the client and the consult-              Nearly all informants reported that, having selected
+ants negotiate both with each other and also with the lo-           the construction method, they disregard the construc-
+cal planning authority to arrive at an acceptable design.           tion period stated in the tender and work out what time
+In this activity local regulatory authorities have to take          they think it ought to take to carry out the works. That
+note of objections by their own oﬃcers, the public and              is their ÔoptimalÕ period in the sense that it allows for the
+adjoining property owners at both outline and detailed              minimum but robust time buﬀers to cope with risks at-
+construction permit application stage.                              tached to critical packages. In nearly all cases this tends
+   At the construction planning stage there is a number             to be longer than the stated contract period in the tender
+of decision actors. This makes the plannerÕs negotiating            documents. They then see what time they can trim oﬀ
+skills all-important. Although works contractors do not             the ÔoptimalÕ period. This exercise helps them to evaluate
+decide whether or not to tender for part of the works at            the risks associated with attempting to construct the
+the principal contractorÕs pre-tender stage, if principal           building within the time preferred by the client/consult-
+contractor planners do not have the tacit support of                ant. They often discuss this with estimators who have a
+their supply chain at this stage (or conﬁdence that such            knowledge of trade output rates. Although they will
+support will be forthcoming) then they are running a                take note of this, many are sceptical about relying on
+considerable risk.                                                  such data. They prefer to use their own ÔfeelÕ for package
+   There are further problems in negotiating with the               times gained by experience.
+ÔconstrainerÕ category of actors. If construction permit                Principal contractor planners do use critical path
+applications have been passed against the advice of local           methods but their work is more in the nature of plan-
+authority oﬃcers or against strong objections from                  ning co-ordinators. They use critical path methods in a
+neighbouring property owners then, subsequent negoti-               broad brush approach since they recognise that the peo-
+ations with these actors at the construction programme              ple best placed to plan work in detail are the works con-
+planning stage may be all the more diﬃcult.                         tractors. What is clear is that those informants who plan
+                                                                    larger more complex projects over several months attach
+                                                                    greater importance to their use of critical path methods.
+7. Review of construction project planning practice                 One of those was a works contractor so he has to plan in
+                                                                    detail. The remainder recognise the limitations of the
+   It was clear from the interviews that a systematic re-           methods but point out that they have to allocate fairly
+view of project planning (and project review in general)            the contract time between diﬀerent works contractors
+was either rare or non-existent. A signiﬁcant number of             and they have enough experience and understanding of
+informants said that they did not tend to refer to past             task dependencies to develop a workable network model.
+job records as these were either non-existent or inade-             This assists them in negotiating with the works contrac-
+quate. Project feedback does, of course, occur (negative            tors. It also helps them to understand where the greatest
+feedback in particular). However, without systematic                time-risk areas might lie.
+feedback it is not clear how learning and improvement                   Virtually all planners said that they were not attempt-
+of the planning process can take place at an organisa-              ing to optimise the construction time but rather to get a
+                        G.M. Winch, J. Kelsey / International Journal of Project Management 23 (2005) 141–149                          149
+
+realistic time which allowed a reasonable time buﬀer to              in delivering construction projects consummately [3,12].
+take account of known risk areas. Most said that they                It is also clear that detailed planning needs to be decen-
+would be prepared to Ôwalk awayÕ from a contract if                  tralised to the level responsible for the execution of the
+the construction period stated in the tender were wholly             works [10–12]. This paper, has focused on the pre-ten-
+unreasonable by the submission of a non-conforming                   der planning process which forms the basis of the nego-
+bid. Most were prepared to submit a non-conforming                   tiation and contractual agreement of the master
+bid if they felt that they could oﬀer a lower price. A               programme, and also sets the strategic context for the
+few would be prepared to submit a non-conforming                     more detailed decentralised planning to post-contract.
+bid at a higher price and a shorter construction period              We have shown that planners work in a complex net-
+where they believed that time was of the essence to the              work of relationships spreading within and without
+client.                                                              the contracting organisation, they work to pressing
+                                                                     deadlines which preclude detailed analysis, and under
+                                                                     signiﬁcant levels of uncertainty. We encourage others
+8. Conclusions                                                       to pursue this line of enquiry – planning remains central
+                                                                     to construction project management, and its practice
+   Construction project planners add value for the con-              deserves more research attention than it currently
+tracting organisation by ensuring that estimating and                receives.
+tendering are based on a robust understanding of the
+methods, time and space required to carry out the tasks
+for each building contract and the corresponding risks               References
+involved. Their output can be inﬂuential in winning ten-
+                                                                      [1] North S, Winch GM, Dawood N, Heesom D, Kelsey J, Sriprasert
+ders not based on purely ﬁnancial criteria. They have to                  S, Technical evaluation: VIRCON Task 12 report UMIST, a
+perform both planning and other work in a time- and                       VIRCON project report, 2003.
+information-constrained environment which requires                    [2] Laufer A, Howell GA, Rosenfeld Y. Three modes of short-term
+considerable use of heuristics based on judgement and                     construction planning. Constr Manage Econ 1992;10:249–62.
+experience-based learning. Negotiation and communica-                 [3] Laufer A, Tucker RL. Is construction project planning really
+                                                                          doing its job? A critical examination of focus, role and process.
+tion are important in their work and for this reason                      Constr Manage Econ 1987;5:243–66.
+many of the processes and task interdependencies in                   [4] Laufer A, Tucker RL, Shapira A, Shenhar AJ. The multiplicity
+their work are iterative. Their longer-term objectives                    concept in construction project planning. Constr Manage Econ
+have to take account of potential long-term relation-                     1994;12:53–65.
+ships with operational management colleagues and rep-                 [5] Laufer A, Tucker RL. Competence and timing dilemma in
+                                                                          construction planning. Constr Manage Econ 1988;6:339–55.
+resentatives of other organisations with whom they have               [6] Laufer A. A micro view of the project planning process. Constr
+to negotiate.                                                             Manage Econ 1992;10:31–43.
+   Pre-tender construction planning has to be under-                  [7] Turner JR. The handbook of project-based management. 2nd
+stood within the broader context shown in Fig. 1 that                     ed.. London: McGraw-Hill; 1999.
+includes design and procurement planning. It is a high-               [8] Winch GM. Managing construction projects: an information
+                                                                          processing approach. Oxford: Blackwell Science; 2002.
+level planning activity, which has to incorporate the                 [9] Goldratt EM. Critical chain great. Barrington: The North River
+many lower level plans of works contractors. It involves                  Press; 1997.
+as much co-ordination of planning as direct planning                 [10] Barber P, Tomkins C, Graves A. Decentralised site management –
+although re-examination of the lower-level schedule                       a case study International. J Proj Manage 1999;17:113–20.
+may be required to conﬁrm the robustness of the high-                [11] Ballard G, Howell G. Shielding production: essential step in
+                                                                          production control. J Constr Eng Manage 1998;124:11–7.
+er-level plan. It is this process that sets the framework            [12] Faniran OO, Love PED, Li H. Optimal allocation of construction
+for the more detailed level of activity as advocated by                   planning resources. J Constr Eng Manage 1999;125:311–9.
+the last planner approach and critical chain which are               [13] Kelsey J, Winch G, Penn A. Understanding the project planning
+most appropriate for the development of the works con-                    process: requirements capture for the virtual construction site
+tractorsÕ programmes shown as D in Fig. 1.                                Bartlett research paper 15, a VIRCON project report: University
+                                                                          College London; 2001.
+   The beneﬁts of planning are seen by mid-level man-                [14] Heesom D, Mahdjoubi L. Technology opportunities and poten-
+agers as producing beneﬁcial future states that would                     tial volume 2: project planning software, a VIRCON project
+not have occurred and by top managers as preventing                       report: University of Wolverhampton; 2002.
+adverse future states that would otherwise have oc-                  [15] Rummler GA, Brache AP. Improving performance: how to
+curred. Accordingly the view of the beneﬁts of planning                   manage the white space on the organization chart. San Fran-
+                                                                          cisco: Jossey-Bass; 1995.
+varies within the organisation. The ÔpreventedÕ states               [16] Winch GM, Carr B. Processes maps and protocols: understanding
+can be diﬃcult to identify and measure in economic                        the shape of the construction process. Constr Manage Econ
+terms. It is clear that planning has a crucial role to play               2001;19:519–31.
+
