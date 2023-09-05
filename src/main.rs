@@ -208,7 +208,7 @@ mod install {
 
         Command::new("sh")
             .arg("-c")
-            .arg(format!("echo {} | sudo -S {}", password.trim(), poppler_install))
+            .arg(format!("echo {} | sudo -S {}", password.trim(), poppler_install_cmd))
             .spawn()
             .expect(error_msg);
         Ok(())
