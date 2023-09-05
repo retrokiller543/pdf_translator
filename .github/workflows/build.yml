@@ -96,3 +96,4 @@ jobs:
         files: |
           pdf_translator-ubuntu-latest/pdf_translator-ubuntu-latest
           pdf_translator-macos-latest/pdf_translator-macos-latest
+          pdf_translator-windows-latest/pdf_translator-windows-latest.exe
