@@ -55,6 +55,7 @@ jobs:
       run: cargo build --release
 
     - name: Rename the binary to include OS
+      if: matrix.os != 'windows-latest'
       run: |
           mv target/release/pdf_translator target/release/pdf_translator-${{ matrix.os }}
 
