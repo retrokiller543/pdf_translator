@@ -191,6 +191,25 @@ mod install {
         Ok(())
     }
 
+    #[cfg(target_os = "linux")]
+    fn get_package_manager() -> String {
+        let package_managers = vec!["apt", "yum", "pacman"];
+
+        for manager in package_managers {
+            let output = Command::new("which")
+                .arg(manager)
+                .output()
+                .expect("Error: 'which' command not found!");
+
+            // If the command succeeded, then the package manager exists on the system
+            if output.status.success() {
+                return manager.to_string();
+            }
+        }
+
+        "".to_string() // Return an empty string if no package manager found
+    }
+
     #[cfg(target_os = "macos")]
     fn install() -> Result<(), String> {
         // Prompt user for password
@@ -230,6 +249,44 @@ mod install {
         false
     }
 
+    #[cfg(target_os = "windows")]
+    fn install() -> Result<(), String> {
+        let error_msg_choco = "Error installing chocolaty";
+        let error_msg_poppler = "Error installing using package manager 'choco'";
+        
+        // Check if Chocolaty is installed, if not then install it
+        if !check_chocolaty() {
+            Command::new("powershell")
+                .arg("-Command")
+                .arg("Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))")
+                .spawn()
+                .expect(error_msg_choco);
+        }
+        
+        // Install poppler-utils using Chocolaty
+        Command::new("choco")
+            .arg("install")
+            .arg("poppler")
+            .spawn()
+            .expect(error_msg_poppler);
+        Ok(())
+    }
+
+    #[cfg(target_os = "windows")]
+    fn check_chocolaty() -> bool {
+        let output = Command::new("where")
+            .arg("choco")
+            .output()
+            .expect("Error: 'where' command not found!");
+
+        // If the command succeeded, then Chocolaty exists on the system
+        if output.status.success() {
+            return true;
+        }
+
+        false
+    }
+
     fn check_poppler() -> Result<(), Error> {
         let output = Command::new("pdftotext")
             .arg("-v")
@@ -244,25 +301,6 @@ mod install {
             let _ = install();
             Ok(())
         }
-    }
-
-    #[cfg(target_os = "linux")]
-    fn get_package_manager() -> String {
-        let package_managers = vec!["apt", "yum", "pacman"];
-
-        for manager in package_managers {
-            let output = Command::new("which")
-                .arg(manager)
-                .output()
-                .expect("Error: 'which' command not found!");
-
-            // If the command succeeded, then the package manager exists on the system
-            if output.status.success() {
-                return manager.to_string();
-            }
-        }
-
-        "".to_string() // Return an empty string if no package manager found
     }
 }
 
