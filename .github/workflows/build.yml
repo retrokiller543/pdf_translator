@@ -56,7 +56,7 @@ jobs:
 
     - name: Rename the binary to include OS
       run: |
-        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+        if ([[ "${{ matrix.os }}" == "windows-latest" ]]); then
           mv target/release/pdf_translator.exe target/release/pdf_translator-${{ matrix.os }}.exe
         else
           mv target/release/pdf_translator target/release/pdf_translator-${{ matrix.os }}
