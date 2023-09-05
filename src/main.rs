@@ -1,5 +1,3 @@
-use clap::Parser;
-
 // create a module for reading the text of the pdf file and also checking if poppler is installed
 mod pdf_reader {
     use std::process::Command;
@@ -52,12 +50,25 @@ mod pdf_reader {
         }
     }
 
+    mod tests {
+        #[allow(unused_imports)]
+        use super::*;
+
+        #[test]
+        fn test_read_basic_pdf() {
+            let pdf_reader = PdfReader::new("./test-files/example.pdf").expect("Error reading pdf");
+            let content = pdf_reader.get_content();
+            let correct_content: Vec<(usize, String)> = vec![(0, "Hello World!".to_string()), (1, "\u{c}".to_string())];
+
+            // compare correct content with the content from the pdf
+            assert_eq!(content, correct_content);
+        }
+    }
 }
 
 
 mod translator {
     use reqwest;
-    use std::env::var;
     use serde::Serialize;
     use std::collections::HashMap;
 
@@ -336,6 +347,43 @@ mod install {
             Ok(())
         }
     }
+
+    mod tests {
+        #[allow(unused_imports)]
+        use super::*;
+
+        #[test]
+        fn test_check_poppler() {
+            let result = check_poppler();
+            assert!(result.is_ok());
+        }
+
+        #[test]
+        fn test_check_package_manager() {
+            #[cfg(target_os = "linux")]
+            {
+                let result = get_package_manager();
+                assert!(result != "");
+            }
+            #[cfg(target_os = "macos")]
+            {
+                let result = check_brew();
+                assert!(result == false);
+            }
+            #[cfg(target_os = "windows")]
+            {
+                let result = check_chocolaty();
+                assert!(result == false);
+            }
+        }
+
+        #[cfg(target_os = "windows")]
+        #[test]
+        fn test_install() {
+            let result = install();
+            assert!(result.is_ok());
+        }
+    }
 }
 
 
@@ -351,7 +399,6 @@ mod program {
     
         match translator::translate_text(pdf_reader.get_content()).await {
             Ok(translated_content) => {
-                dbg!(translated_content.clone());
                 let mut file = File::create("translated_text.txt").expect("Error creating file");
                 for (line_number, line) in translated_content {
                     writeln!(file, "{}: {}", line_number, line).expect("Error writing to file");
@@ -363,7 +410,7 @@ mod program {
     }
 }
 
-
+use clap::Parser;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
