@@ -8,19 +8,34 @@ mod pdf_reader {
     use std::io::{Error, Read};
 
     pub struct PdfReader {
-        path: String,
+        content: Vec<(usize, String)>,
     }
 
     impl PdfReader {
         pub fn new(path: &str) -> Result<PdfReader, Error> {
             PdfReader::check_poppler()?;
 
-            PdfReader::read_pdf(path)?;
+            let file_path = path.replace(".pdf", ".txt");
+            let content = PdfReader::read_file_with_formatting(&file_path)?;
 
             Ok(PdfReader {
-                path: path.to_string(),
+                content: content,
             })
         }
+
+        fn read_file_with_formatting(file_path: &str) -> Result<Vec<(usize, String)>, std::io::Error> {
+            let mut file = std::fs::File::open(file_path)?;
+            let mut contents = String::new();
+            file.read_to_string(&mut contents)?;
+        
+            let lines_with_numbers: Vec<(usize, String)> = contents.lines()
+                .enumerate()
+                .map(|(idx, line)| (idx, line.to_string()))
+                .collect();
+        
+            Ok(lines_with_numbers)
+        }
+        
 
         fn read_file(file_path: &str) -> Result<String, std::io::Error> {
             let mut file = std::fs::File::open(file_path)?;
@@ -29,11 +44,8 @@ mod pdf_reader {
             Ok(contents)
         }
 
-        pub fn get_content(&self) -> String {
-            let file_path = &self.path.replace(".pdf", ".txt");
-            // read file at file_path and return content
-            let content = PdfReader::read_file(file_path).unwrap_or_default();
-            return content.to_owned();
+        pub fn get_content(&self) -> Vec<(usize, String)> {
+            return self.content.clone();
         }
 
         fn read_pdf(path: &str) -> Result<String, Error> {
@@ -100,22 +112,20 @@ mod translator {
         key: String,
     }
 
-    pub async fn translate_text(text: String) -> Result<String, reqwest::Error> {
+    pub async fn translate_text(formatted_content: Vec<(usize, String)>) -> Result<Vec<(usize, String)>, reqwest::Error> {
         let client = reqwest::Client::new();
-        let chunks = split_text(text.as_str());
-
         let mut translated_texts = Vec::new();
-
-        for chunk in chunks {
+    
+        for (line_number, line) in formatted_content {
             let mut payload = HashMap::new();
-            payload.insert("q", chunk);
+            payload.insert("q", line.clone());
             payload.insert("source", "en".to_string());
             payload.insert("target", "sv".to_string());
             payload.insert("format", "text".to_string());
             payload.insert("key", API_KEY.to_string());
-
+    
             let access_token = "Bearer ".to_string() + ACCESS_TOKEN;
-
+    
             let response: serde_json::Value = client
                 .post(GOOGLE_TRANSLATE_API_ENDPOINT)
                 .header("Authorization", access_token)
@@ -126,30 +136,14 @@ mod translator {
                 .await?
                 .json()
                 .await?;
-
-            let translated_chunk = parse_response(&response.to_string()).expect("Error parsing response");
-            translated_texts.push(translated_chunk);
+    
+            let translated_line = parse_response(&response.to_string()).expect("Error parsing response");
+            translated_texts.push((line_number, translated_line));
         }
-
-        Ok(translated_texts.join(" "))
+    
+        Ok(translated_texts)
     }
-
-    fn split_text(text: &str) -> Vec<String> {
-        let mut chunks = Vec::new();
-        let mut chunk = String::new();
-        for word in text.split_whitespace() {
-            if chunk.len() + word.len() > 102400 {
-                chunks.push(chunk);
-                chunk = String::new();
-            }
-            chunk.push_str(word);
-            chunk.push(' ');
-        }
-        if !chunk.is_empty() {
-            chunks.push(chunk);
-        }
-        chunks
-    }
+    
 
     fn parse_response(response: &str) -> Result<String, serde_json::Error> {
         let v: serde_json::Value = serde_json::from_str(response)?;
@@ -158,34 +152,14 @@ mod translator {
     }
 }
 
-fn format_by_sentences(text: &str, sentences_per_paragraph: usize) -> String {
-    let sentences: Vec<&str> = text.split(". ").collect();
-    
-    let mut formatted_paragraphs = Vec::new();
-    let mut paragraph = Vec::new();
-    
-    for sentence in &sentences {
-        paragraph.push(*sentence);
-        if paragraph.len() == sentences_per_paragraph {
-            formatted_paragraphs.push(paragraph.join(". ") + ".");
-            paragraph.clear();
-        }
-    }
-    
-    // Append any remaining sentences as the last paragraph
-    if !paragraph.is_empty() {
-        formatted_paragraphs.push(paragraph.join(". ") + ".");
-    }
-    
-    formatted_paragraphs.join("\n\n")
-}
-
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
     #[arg(short, long)]
     path: String,
+    #[arg(short, long)]
+    debug: bool,
 }
 
 
@@ -196,12 +170,11 @@ async fn main() {
     let pdf_reader = pdf_reader::PdfReader::new(args.path.as_str()).expect("Error reading pdf");
     
     match translator::translate_text(pdf_reader.get_content()).await {
-        Ok(mut translated_text) => {
-            // Format the translated text
-            translated_text = format_by_sentences(&translated_text, 5);
-
+        Ok(translated_content) => {
             let mut file = File::create("translated_text.txt").expect("Error creating file");
-            file.write_all(translated_text.as_bytes()).expect("Error writing to file");
+            for (line_number, line) in translated_content {
+                writeln!(file, "{}: {}", line_number, line).expect("Error writing to file");
+            }
             println!("Translation complete");
         },
         Err(e) => println!("Error translating: {}", e),
