@@ -1,0 +1,98 @@
+name: Test, Build and Publish
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+  IMAGE_NAME: "pdf_translator"
+
+jobs:
+  build_and_test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+
+    - name: Cache cargo registry
+      uses: actions/cache@v2
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-registry-
+
+    - name: Cache cargo index
+      uses: actions/cache@v2
+      with:
+        path: ~/.cargo/git
+        key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-git-
+
+    - name: Cache cargo build
+      uses: actions/cache@v2
+      with:
+        path: target
+        key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-target-
+
+    - name: Build
+      run: cargo build --release
+
+    - name: Rename the binary to include OS
+      run: mv target/release/pdf_translator target/release/pdf_translator-${{ matrix.os }}
+
+    - name: Upload the binary for release job
+      uses: actions/upload-artifact@v2
+      with:
+        name: pdf_translator-${{ matrix.os }}
+        path: target/release/pdf_translator-${{ matrix.os }}
+
+  publish_github_release:
+    needs: build_and_test
+    runs-on: ubuntu-latest
+  
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+  
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+  
+    - name: Download all built binaries
+      uses: actions/download-artifact@v2
+
+    - name: Increment Version and Release
+      run: |
+        chmod +x increment_version.sh
+        ./increment_version.sh
+  
+    - uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GH_PAT }}"
+        prerelease: false
+        automatic_release_tag: "v${{ env.NEW_VERSION }}"
+        title: "Release v${{ env.NEW_VERSION }}"
+        files: |
+          rustic_rtmp-ubuntu-latest/rustic_rtmp-ubuntu-latest
+          rustic_rtmp-macos-latest/rustic_rtmp-macos-latest
