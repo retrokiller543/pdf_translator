@@ -196,16 +196,15 @@ mod install {
         print!("Please enter your sudo password: ");
         let password = read_password().expect("Failed to read password");
         let error_msg = "Error installing using package manager 'brew'";
+        let poppler_install_cmd = "brew install poppler";
         if !check_brew(){
-            let brew_install = "/bin/bash -c " + "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)";
+            let brew_install = format!("/bin/bash -c {}", "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)");
             Command::new("sh")
                 .arg("-c")
                 .arg(format!("echo {} | sudo -S {}", password.trim(), brew_install))
                 .spawn()
                 .expect(error_msg);
-            
-            let poppler_install = "brew install poppler";
-        }
+            }
 
         Command::new("sh")
             .arg("-c")
