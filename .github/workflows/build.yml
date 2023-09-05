@@ -65,6 +65,15 @@ jobs:
     - name: Rename the binary on windows to include OS
       if: matrix.os == 'windows-latest'
       run: |
+          if (Test-Path target/release/pdf_translator-windows-latest.exe) {
+              Remove-Item target/release/pdf_translator-windows-latest.exe -Force
+          }
+          Move-Item target/release/pdf_translator.exe target/release/pdf_translator-${{ matrix.os }}.exe
+        
+
+    - name: Rename the binary on windows to include OS
+      if: matrix.os == 'windows-latest'
+      run: |
           mv target/release/pdf_translator.exe target/release/pdf_translator-${{ matrix.os }}.exe
 
     - name: Upload the binary for release job
