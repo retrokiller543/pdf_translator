@@ -1,5 +1,6 @@
 [package]
 name = "pdf_translator"
+description = "A CLI tool to parse text from a pdf and translate it to Swedish"
 version = "1.0.0"
 edition = "2021"
 
