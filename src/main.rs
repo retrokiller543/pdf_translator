@@ -190,7 +190,7 @@ mod install {
         Ok(())
     }
 
-    #[cfg(target_os = "darwin")]
+    #[cfg(target_os = "macos")]
     fn install() -> Result<(), String> {
         // Prompt user for password
         print!("Please enter your sudo password: ");
@@ -215,7 +215,7 @@ mod install {
         Ok(())
     }
 
-    #[cfg(target_os = "darwin")]
+    #[cfg(target_os = "macos")]
     fn check_brew() -> bool {
         let output = Command::new("which")
             .arg("brew")
@@ -315,6 +315,8 @@ struct Args {
 #[tokio::main]
 async fn main() {
     let args = Args::parse();
+
+    println!("{:?}", cfg!(target_os = "linux"));
 
     if args.debug {
         program::run("./test-files/example.pdf".to_string()).await;
