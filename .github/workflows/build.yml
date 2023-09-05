@@ -94,5 +94,5 @@ jobs:
         automatic_release_tag: "v${{ env.NEW_VERSION }}"
         title: "Release v${{ env.NEW_VERSION }}"
         files: |
-          rustic_rtmp-ubuntu-latest/rustic_rtmp-ubuntu-latest
-          rustic_rtmp-macos-latest/rustic_rtmp-macos-latest
+          pdf_translator-ubuntu-latest/pdf_translator-ubuntu-latest
+          pdf_translator-macos-latest/pdf_translator-macos-latest
