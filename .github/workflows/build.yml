@@ -56,11 +56,12 @@ jobs:
 
     - name: Rename the binary to include OS
       run: |
-        if ([[ "${{ matrix.os }}" == "windows-latest" ]]); then
-          mv target/release/pdf_translator.exe target/release/pdf_translator-${{ matrix.os }}.exe
-        else
           mv target/release/pdf_translator target/release/pdf_translator-${{ matrix.os }}
-        fi
+
+    - name: Rename the binary on windows to include OS
+      if: matrix.os == 'windows-latest'
+      run: |
+          mv target/release/pdf_translator.exe target/release/pdf_translator-${{ matrix.os }}.exe
 
     - name: Upload the binary for release job
       uses: actions/upload-artifact@v2
