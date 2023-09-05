@@ -57,15 +57,12 @@ mod pdf_reader {
 
 mod translator {
     use reqwest;
+    use std::env::var;
     use serde::Serialize;
     use std::collections::HashMap;
-    use dotenv_codegen::{self, dotenv};
 
     const GOOGLE_TRANSLATE_API_ENDPOINT: &str = "https://translation.googleapis.com/language/translate/v2";
-    const API_KEY: &str = dotenv!("API_KEY");
-    const PROJECT_ID: &str = dotenv!("PROJECT_ID");
-    const ACCESS_TOKEN: &str = dotenv!("ACCESS_TOKEN");
-    
+
     #[derive(Serialize)]
     struct TranslateRequest {
         q: String,
@@ -76,6 +73,9 @@ mod translator {
     }
 
     pub async fn translate_text(formatted_content: Vec<(usize, String)>) -> Result<Vec<(usize, String)>, reqwest::Error> {
+        let api_key: String = var("API_KEY").unwrap_or_default();
+        let project_id: String = var("PROJECT_ID").unwrap_or_default();
+        let a_t: String = var("ACCESS_TOKEN").unwrap_or_default();
         let client = reqwest::Client::new();
         let mut translated_texts = Vec::new();
     
@@ -85,14 +85,14 @@ mod translator {
             payload.insert("source", "en".to_string());
             payload.insert("target", "sv".to_string());
             payload.insert("format", "text".to_string());
-            payload.insert("key", API_KEY.to_string());
+            payload.insert("key", api_key.clone());
     
-            let access_token = "Bearer ".to_string() + ACCESS_TOKEN;
+            let access_token = "Bearer ".to_string() + a_t.as_str();
     
             let response: serde_json::Value = client
                 .post(GOOGLE_TRANSLATE_API_ENDPOINT)
                 .header("Authorization", access_token)
-                .header("x-goog-user-project", PROJECT_ID)
+                .header("x-goog-user-project", project_id.clone())
                 .header("Content-Type", "application/json; charset=utf-8")
                 .json(&payload)
                 .send()
