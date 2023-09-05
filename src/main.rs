@@ -12,7 +12,7 @@ mod pdf_reader {
 
     impl PdfReader {
         pub fn new(path: &str) -> Result<PdfReader, Error> {
-            let _installer = install::run();
+            let _ = install::run();
             PdfReader::read_pdf(path)?;
 
             let file_path = path.replace(".pdf", ".txt");
@@ -167,29 +167,67 @@ mod install {
         Ok(())
     }
 
+    #[cfg(target_os = "linux")]
     fn install() -> Result<(), String> {
-        #[cfg(target_os = "linux")]
-        {
-            let installed_manager = get_package_manager();
+        let installed_manager = get_package_manager();
 
-            if installed_manager == "" {
-                return Err("No package manager is installed".to_string());
-            }
+        if installed_manager == "" {
+            return Err("No package manager is installed".to_string());
+        }
 
-            // Prompt user for password
-            print!("Please enter your sudo password: ");
-            let password = read_password().expect("Failed to read password");
-            
-            let error_msg = "Error installing using package manager '".to_string() + &installed_manager.as_str() + "'";
+        // Prompt user for password
+        print!("Please enter your sudo password: ");
+        let password = read_password().expect("Failed to read password");
+        
+        let error_msg = "Error installing using package manager '".to_string() + &installed_manager.as_str() + "'";
 
-            // Pipe the password to sudo
+        // Pipe the password to sudo
+        Command::new("sh")
+            .arg("-c")
+            .arg(format!("echo {} | sudo -S {} install -y poppler-utils", password.trim(), installed_manager))
+            .spawn()
+            .expect(error_msg.as_str());
+        Ok(())
+    }
+
+    #[cfg(target_os = "mac")]
+    fn install() -> Result<(), String> {
+        // Prompt user for password
+        print!("Please enter your sudo password: ");
+        let password = read_password().expect("Failed to read password");
+        let error_msg = "Error installing using package manager 'brew'";
+        if !check_brew(){
+            let brew_install = "/bin/bash -c " + "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)";
             Command::new("sh")
                 .arg("-c")
-                .arg(format!("echo {} | sudo -S {} install -y poppler-utils", password.trim(), installed_manager))
+                .arg(format!("echo {} | sudo -S {}", password.trim(), brew_install))
                 .spawn()
-                .expect(error_msg.as_str());
+                .expect(error_msg);
+            
+            let poppler_install = "brew install poppler";
         }
+
+        Command::new("sh")
+            .arg("-c")
+            .arg(format!("echo {} | sudo -S {}", password.trim(), poppler_install))
+            .spawn()
+            .expect(error_msg);
         Ok(())
+    }
+
+    #[cfg(target_os = "mac")]
+    fn check_brew() -> bool {
+        let output = Command::new("which")
+            .arg("brew")
+            .output()
+            .expect("Error: 'which' command not found!");
+
+        // If the command succeeded, then brew exists on the system
+        if output.status.success() {
+            return true;
+        }
+
+        false
     }
 
     fn check_poppler() -> Result<(), Error> {
