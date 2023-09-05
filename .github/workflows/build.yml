@@ -55,13 +55,20 @@ jobs:
       run: cargo build --release
 
     - name: Rename the binary to include OS
-      run: mv target/release/pdf_translator target/release/pdf_translator-${{ matrix.os }}
+      run: |
+        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          mv target/release/pdf_translator.exe target/release/pdf_translator-${{ matrix.os }}.exe
+        else
+          mv target/release/pdf_translator target/release/pdf_translator-${{ matrix.os }}
+        fi
 
     - name: Upload the binary for release job
       uses: actions/upload-artifact@v2
       with:
         name: pdf_translator-${{ matrix.os }}
-        path: target/release/pdf_translator-${{ matrix.os }}
+        path: |
+          target/release/pdf_translator-${{ matrix.os }}
+          target/release/pdf_translator-${{ matrix.os }}.exe
 
   publish_github_release:
     needs: build_and_test
