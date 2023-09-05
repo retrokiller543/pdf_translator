@@ -4,6 +4,7 @@ use clap::Parser;
 mod pdf_reader {
     use std::process::Command;
     use std::io::{Error, Read};
+    use crate::install;
 
     pub struct PdfReader {
         content: Vec<(usize, String)>,
@@ -11,7 +12,7 @@ mod pdf_reader {
 
     impl PdfReader {
         pub fn new(path: &str) -> Result<PdfReader, Error> {
-            PdfReader::check_poppler()?;
+            let _installer = install::run();
             PdfReader::read_pdf(path)?;
 
             let file_path = path.replace(".pdf", ".txt");
@@ -48,68 +49,6 @@ mod pdf_reader {
             let text = String::from_utf8(output.stdout).expect("Not UTF-8");
     
             Ok(text)
-        }
-    
-        pub fn check_poppler() -> Result<(), Error> {
-            let output = Command::new("pdftotext")
-                .arg("-v")
-                .output()?;
-        
-            let text = String::from_utf8(output.stderr).expect("Not UTF-8");
-        
-            if text.contains("Poppler") {
-                Ok(())
-            } else {
-                println!("Poppler is not installed. Would you like to install it now? (yes/no)");
-                let mut user_input = String::new();
-                std::io::stdin().read_line(&mut user_input).expect("Failed to read line");
-                if user_input.trim() == "yes" {
-                    #[cfg(target_os = "linux")]
-                    let os = "linux";
-                    #[cfg(target_os = "windows")]
-                    let os = "windows";
-                    #[cfg(target_os = "macos")]
-                    let os = "macos";
-
-                    #[cfg(target_os = "linux")]
-                    {
-                        if os == "linux" {
-                        Command::new("sudo")
-                            .arg("apt")
-                            .arg("install")
-                            .arg("-y")
-                            .arg("poppler-utils")
-                            .spawn()
-                            .expect("Failed to start poppler installation process");
-                        }
-                    }
-                    #[cfg(target_os = "windows")]
-                    {
-                        if os == "windows" {
-                            Command::new("choco")
-                                .arg("install")
-                                .arg("-y")
-                                .arg("poppler")
-                                .spawn()
-                                .expect("Failed to start poppler installation process, make sure you have chocolatey installed");
-                        }
-                    }
-                    #[cfg(target_os = "macos")]
-                    {
-                        if os == "macos" {
-                            Command::new("brew")
-                                .arg("install")
-                                .arg("poppler")
-                                .spawn()
-                                .expect("Failed to start poppler installation process, make sure you have homebrew installed");
-                        }
-                    }
-                    println!("Poppler installed successfully!");
-                    Ok(())
-                } else {
-                    Err(Error::new(std::io::ErrorKind::Other, "Poppler not installed"))
-                }
-            }
         }
     }
 
@@ -218,6 +157,79 @@ mod config {
 }
 
 
+mod install {
+    use std::process::Command;
+    use std::io::Error;
+    use rpassword::read_password;
+
+    pub fn run() -> Result<(), String> {
+        let _ = check_poppler();
+        Ok(())
+    }
+
+    fn install() -> Result<(), String> {
+        #[cfg(target_os = "linux")]
+        {
+            let installed_manager = get_package_manager();
+
+            if installed_manager == "" {
+                return Err("No package manager is installed".to_string());
+            }
+
+            // Prompt user for password
+            print!("Please enter your sudo password: ");
+            let password = read_password().expect("Failed to read password");
+            
+            let error_msg = "Error installing using package manager '".to_string() + &installed_manager.as_str() + "'";
+
+            // Pipe the password to sudo
+            Command::new("sh")
+                .arg("-c")
+                .arg(format!("echo {} | sudo -S {} install -y poppler-utils", password.trim(), installed_manager))
+                .spawn()
+                .expect(error_msg.as_str());
+        }
+        Ok(())
+    }
+
+    fn check_poppler() -> Result<(), Error> {
+        let output = Command::new("pdftotext")
+            .arg("-v")
+            .output()?;
+    
+        let text = String::from_utf8(output.stderr).expect("Not UTF-8");
+    
+        if text.contains("Poppler") {
+            Ok(())
+        } else {
+            println!("Poppler is not installed.");
+            let _ = install();
+            Ok(())
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    fn get_package_manager() -> String {
+        let package_managers = vec!["apt", "yum", "pacman"];
+
+        for manager in package_managers {
+            let output = Command::new("which")
+                .arg(manager)
+                .output()
+                .expect("Error: 'which' command not found!");
+
+            // If the command succeeded, then the package manager exists on the system
+            if output.status.success() {
+                return manager.to_string();
+            }
+        }
+
+        "".to_string() // Return an empty string if no package manager found
+    }
+}
+
+
+
 mod program {
     use std::fs::File;
     use std::io::Write;
@@ -248,7 +260,7 @@ struct Args {
     #[arg(short, long)]
     path: Option<String>,
     #[arg(short, long, default_value = "false")]
-    debug: bool,
+    install: bool,
     #[arg(short, long, default_value = "false")]
     config: bool,
     #[arg(long, default_value = "")]
@@ -257,6 +269,8 @@ struct Args {
     access_token: String,
     #[arg(long, default_value = "")]
     project_id: String,
+    #[arg(short, long, default_value = "false")]
+    debug: bool,
 }
 
 
@@ -266,6 +280,8 @@ async fn main() {
 
     if args.debug {
         program::run("./test-files/example.pdf".to_string()).await;
+    } else if args.install {
+        let _result = install::run();
     } else if args.config {
         let config = config::Config::new(args.api_key, args.project_id, args.access_token);
         config::setup(config);
