@@ -156,12 +156,13 @@ mod config {
     }
 }
 
-
+/// The `install` module which provides functions to check if `poppler-utils` is installed and install it if it is not.
 mod install {
     use std::process::Command;
     use std::io::Error;
     use rpassword::read_password;
 
+    /// This function checks if `poppler-utils` is installed and installs it if it is not.
     pub fn run() -> Result<(), String> {
         let _ = check_poppler();
         Ok(())
