@@ -190,7 +190,7 @@ mod install {
         Ok(())
     }
 
-    #[cfg(target_os = "mac")]
+    #[cfg(target_os = "darwin")]
     fn install() -> Result<(), String> {
         // Prompt user for password
         print!("Please enter your sudo password: ");
@@ -215,7 +215,7 @@ mod install {
         Ok(())
     }
 
-    #[cfg(target_os = "mac")]
+    #[cfg(target_os = "darwin")]
     fn check_brew() -> bool {
         let output = Command::new("which")
             .arg("brew")
