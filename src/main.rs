@@ -61,6 +61,8 @@ mod translator {
     use serde::Serialize;
     use std::collections::HashMap;
 
+    use crate::config;
+
     const GOOGLE_TRANSLATE_API_ENDPOINT: &str = "https://translation.googleapis.com/language/translate/v2";
 
     #[derive(Serialize)]
@@ -73,9 +75,7 @@ mod translator {
     }
 
     pub async fn translate_text(formatted_content: Vec<(usize, String)>) -> Result<Vec<(usize, String)>, reqwest::Error> {
-        let api_key: String = var("API_KEY").unwrap_or_default();
-        let project_id: String = var("PROJECT_ID").unwrap_or_default();
-        let a_t: String = var("ACCESS_TOKEN").unwrap_or_default();
+        let config: config::Config = config::Config::load().expect("Failed to load configuration");
         let client = reqwest::Client::new();
         let mut translated_texts = Vec::new();
     
@@ -85,14 +85,14 @@ mod translator {
             payload.insert("source", "en".to_string());
             payload.insert("target", "sv".to_string());
             payload.insert("format", "text".to_string());
-            payload.insert("key", api_key.clone());
+            payload.insert("key", config.get_api_key());
     
-            let access_token = "Bearer ".to_string() + a_t.as_str();
+            let access_token = "Bearer ".to_string() + config.get_access_token().as_str();
     
             let response: serde_json::Value = client
                 .post(GOOGLE_TRANSLATE_API_ENDPOINT)
                 .header("Authorization", access_token)
-                .header("x-goog-user-project", project_id.clone())
+                .header("x-goog-user-project", config.get_project_id())
                 .header("Content-Type", "application/json; charset=utf-8")
                 .json(&payload)
                 .send()
@@ -116,8 +116,12 @@ mod translator {
 }
 
 mod config {
-    use std::env;
+    use std::fs;
+    use directories::ProjectDirs;
+    use serde::{Deserialize, Serialize};
+    use toml;
 
+    #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Config {
         api_key: String,
         project_id: String,
@@ -132,28 +136,58 @@ mod config {
                 access_token,
             }
         }
+    
+        /// Loads the configuration from the default config file.
+        pub fn load() -> Result<Config, Box<dyn std::error::Error>> {
+            let config_path = Self::get_config_path()?;
+            let config_str = fs::read_to_string(config_path)?;
+            let config: Config = toml::from_str(&config_str)?;
+            Ok(config)
+        }
+    
+        /// Saves the current configuration to the default config file.
+        pub fn save(&self) -> Result<(), Box<dyn std::error::Error>> {
+            let config_path = Self::get_config_path()?;
+            let config_str = toml::to_string(self)?;
+            fs::write(config_path, config_str)?;
+            Ok(())
+        }
+
+        pub fn get_api_key(&self) -> String {
+            self.api_key.clone()
+        }
+
+        pub fn get_project_id(&self) -> String {
+            self.project_id.clone()
+        }
+
+        pub fn get_access_token(&self) -> String {
+            self.access_token.clone()
+        }
+    
+        /// Determines the path for the configuration file using the `directories` crate.
+        fn get_config_path() -> Result<std::path::PathBuf, Box<dyn std::error::Error>> {
+            let proj_dirs = ProjectDirs::from("com", "pdf_translator_company", "PDF Translator")
+                .ok_or("Failed to get project directories")?;
+            let config_dir = proj_dirs.config_dir();
+            if !config_dir.exists() {
+                fs::create_dir_all(config_dir)?;
+            }
+            Ok(config_dir.join("config.toml"))
+        }
+
     }
-
-    pub fn setup(args: Config) {
-        let api_key = args.api_key;
-        let project_id = args.project_id;
-        let access_token = args.access_token;
-
-        if api_key == "" && project_id == "" && access_token == "" {
-            println!("You must at least provide one of the following arguments '--api_key <API_KEY>', '--access_token <ACCESS_TOKEN>', '--project_id <PROJECT_ID>' ")
+    
+    pub fn setup(args: Config) {    
+        if args.api_key == "" && args.project_id == "" && args.access_token == "" {
+            println!("You must at least provide one of the following arguments '--api_key <API_KEY>', '--access_token <ACCESS_TOKEN>', '--project_id <PROJECT_ID>' ");
+            return;
         }
-
-        // add secrets to env variables
-        if api_key != "" {
-            env::set_var("API_KEY", &api_key);
-        }
-        if project_id != "" {
-            env::set_var("PROJECT_ID", &project_id);
-        }
-        if access_token != "" {
-            env::set_var("ACCESS_TOKEN", &access_token);
-        }
+    
+        args.save().expect("Failed to save configuration");
+        println!("Configuration saved successfully!");
     }
+    
 }
 
 /// The `install` module which provides functions to check if `poppler-utils` is installed and install it if it is not.
@@ -305,7 +339,6 @@ mod install {
 }
 
 
-
 mod program {
     use std::fs::File;
     use std::io::Write;
@@ -318,6 +351,7 @@ mod program {
     
         match translator::translate_text(pdf_reader.get_content()).await {
             Ok(translated_content) => {
+                dbg!(translated_content.clone());
                 let mut file = File::create("translated_text.txt").expect("Error creating file");
                 for (line_number, line) in translated_content {
                     writeln!(file, "{}: {}", line_number, line).expect("Error writing to file");
@@ -353,8 +387,6 @@ struct Args {
 #[tokio::main]
 async fn main() {
     let args = Args::parse();
-
-    println!("{:?}", cfg!(target_os = "linux"));
 
     if args.debug {
         program::run("./test-files/example.pdf".to_string()).await;

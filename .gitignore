@@ -1,3 +1,4 @@
 /target
 .env
-translated_text.txt
+*.txt
+set_env.sh
