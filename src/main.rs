@@ -1,6 +1,6 @@
-use std::env;
 use std::fs::File;
 use std::io::Write;
+use clap::Parser;
 
 // create a module for reading the text of the pdf file and also checking if poppler is installed
 mod pdf_reader {
@@ -180,26 +180,20 @@ fn format_by_sentences(text: &str, sentences_per_paragraph: usize) -> String {
     formatted_paragraphs.join("\n\n")
 }
 
-fn print_help() {
-    println!("Usage: [PROGRAM NAME] [PDF FILE PATH]");
-    println!("This tool reads a given PDF file and translates its content.");
-    println!("Ensure you have `poppler` installed or grant permission to install it when prompted.");
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[arg(short, long)]
+    path: String,
 }
 
 
 #[tokio::main]
 async fn main() {
-    let args: Vec<String> = env::args().collect();
+    let args = Args::parse();
 
-    if args.len() < 2 || args.contains(&"--help".to_string()) {
-        print_help();
-        return;
-    }
-
-
-    let path = &args[1];
-
-    let pdf_reader = pdf_reader::PdfReader::new(path).expect("Error reading pdf");
+    let pdf_reader = pdf_reader::PdfReader::new(args.path.as_str()).expect("Error reading pdf");
     
     match translator::translate_text(pdf_reader.get_content()).await {
         Ok(mut translated_text) => {
