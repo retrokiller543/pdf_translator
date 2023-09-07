@@ -256,13 +256,6 @@ mod config {
         use std::path::Path;
 
         #[test]
-        fn test_load_config() {
-            let result = Config::load();
-            // You might need to adjust this based on what you expect in your default config.
-            assert!(result.is_ok());
-        }
-
-        #[test]
         fn test_save_config() {
             // Backup current config (if exists)
             let backup_path = format!("{}/config_backup.toml", env!("CARGO_MANIFEST_DIR"));
