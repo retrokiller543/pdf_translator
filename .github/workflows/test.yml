@@ -10,11 +10,14 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build_and_test:
+  test:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Install pdftotext
+      run: sudo apt-get update && sudo apt-get install -y poppler-utils
 
     - name: Cache cargo registry
       uses: actions/cache@v2
