@@ -434,7 +434,12 @@ async fn main() {
     if args.debug {
         program::run("./test-files/example.pdf".to_string()).await;
     } else if args.install {
-        let _result = install::run();
+        let result = install::run();
+        if result.is_ok() {
+            println!("Poppler installed successfully!");
+        } else {
+            println!("Error installing poppler: {}", result.err().unwrap());
+        }
     } else if args.config {
         let config = config::Config::new(args.api_key, args.project_id, args.access_token);
         config::setup(config);
