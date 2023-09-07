@@ -420,7 +420,7 @@ mod install {
             #[cfg(target_os = "windows")]
             {
                 let result = check_chocolaty();
-                assert!(result == true);
+                assert!(result);
             }
         }
     }
