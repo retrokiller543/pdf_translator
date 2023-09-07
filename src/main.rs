@@ -454,11 +454,27 @@ async fn main() {
     if args.debug {
         program::run("./test-files/example.pdf".to_string()).await;
     } else if args.install {
-        let result = install::run();
-        if result.is_ok() {
-            println!("Poppler installed successfully!");
-        } else {
-            println!("Error installing poppler: {}", result.err().unwrap());
+        #[cfg(target_os = "linux")]
+        {
+            let result = install::run();
+            if result.is_ok() {
+                println!("Poppler installed successfully!");
+            } else {
+                println!("Error installing poppler: {}", result.err().unwrap());
+            }
+        }
+        #[cfg(target_os = "macos")]
+        {
+            let result = install::run();
+            if result.is_ok() {
+                println!("Poppler installed successfully!");
+            } else {
+                println!("Error installing poppler: {}", result.err().unwrap());
+            }
+        }
+        #[cfg(target_os = "windows")]
+        {
+            println!("The installer for poppler is currently broken on Windows. Please install poppler manually, or use a Linux or MacOS machine.")
         }
     } else if args.config {
         let config = config::Config::new(args.api_key, args.project_id, args.access_token);
