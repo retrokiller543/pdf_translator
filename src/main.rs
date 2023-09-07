@@ -254,7 +254,7 @@ mod install {
         print!("Please enter your sudo password: ");
         let password = read_password().expect("Failed to read password");
         
-        let error_msg = "Error installing using package manager '" + installed_manager.as_str() + "'";
+        let error_msg = "Error installing using package manager '".to_owned() + installed_manager.as_str() + "'";
 
         // Pipe the password to sudo
         Command::new("sh")
@@ -410,7 +410,7 @@ mod install {
             #[cfg(target_os = "linux")]
             {
                 let result = get_package_manager();
-                assert!(!result.is_empty);
+                assert!(!result.is_empty());
             }
             #[cfg(target_os = "macos")]
             {
