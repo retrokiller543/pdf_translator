@@ -50,22 +50,21 @@ mod pdf_reader {
         }
     }
 
-    /*
     mod tests {
         #[allow(unused_imports)]
         use super::*;
 
         #[test]
         fn test_read_basic_pdf() {
-            let pdf_reader = PdfReader::new("./test-files/example.pdf").expect("Error reading pdf");
+            let path = format!("{}/test-files/example.pdf", env!("CARGO_MANIFEST_DIR"));
+            let pdf_reader = PdfReader::new(&path).expect("Error reading pdf");
             let content = pdf_reader.get_content();
             let correct_content: Vec<(usize, String)> = vec![(0, "Hello World!".to_string()), (1, "\u{c}".to_string())];
-
+        
             // compare correct content with the content from the pdf
             assert_eq!(content, correct_content);
         }
     }
-     */
 }
 
 
@@ -249,6 +248,33 @@ mod config {
         args.save().expect("Failed to save configuration");
         println!("Configuration saved successfully!");
     }
+
+    mod tests {
+        #[allow(unused_imports)]
+        use super::*;
+        #[allow(unused_imports)]
+        use std::path::Path;
+
+        #[test]
+        fn test_save_config() {
+            // Backup current config (if exists)
+            let backup_path = format!("{}/config_backup.toml", env!("CARGO_MANIFEST_DIR"));
+            if let Ok(current_config) = Config::load() {
+                fs::write(&backup_path, toml::to_string(&current_config).unwrap()).unwrap();
+            }
+
+            // Test saving a dummy config
+            let mut dummy_config = Config::new("dummy_key".to_string(), "dummy_project".to_string(), "dummy_token".to_string());
+            let save_result = dummy_config.save();
+            assert!(save_result.is_ok());
+
+            // Restore the backed up config
+            if Path::new(&backup_path).exists() {
+                fs::copy(backup_path.clone(), format!("{}/config.toml", env!("CARGO_MANIFEST_DIR"))).unwrap();
+                fs::remove_file(backup_path).unwrap();
+            }
+        }
+    }
     
 }
 
@@ -265,7 +291,6 @@ mod install {
         println!("Checking if poppler-utils is installed...");
         let result = check_poppler();
         if result.is_ok() {
-            println!("Poppler is already installed!");
             Ok(())
         } else {
             Err(result.err().unwrap())
@@ -432,30 +457,25 @@ mod install {
         #[allow(unused_imports)]
         use super::*;
 
-        /*
+        #[cfg(target_os = "linux")]
         #[test]
-        fn test_check_poppler() {
-            let result = check_poppler();
-            assert!(result.is_err());
+        fn test_linux_package_manager_check() {
+            let result = get_package_manager();
+            assert!(!result.is_empty());
         }
-        */
+
+        #[cfg(target_os = "macos")]
         #[test]
-        fn test_check_package_manager() {
-            #[cfg(target_os = "linux")]
-            {
-                let result = get_package_manager();
-                assert!(!result.is_empty());
-            }
-            #[cfg(target_os = "macos")]
-            {
-                let result = check_brew();
-                assert!(result == true);
-            }
-            #[cfg(target_os = "windows")]
-            {
-                let result = check_chocolaty();
-                assert!(result);
-            }
+        fn test_macos_brew_check() {
+            let result = check_brew();
+            assert!(result);
+        }
+
+        #[cfg(target_os = "windows")]
+        #[test]
+        fn test_windows_chocolaty_check() {
+            let result = check_chocolaty();
+            assert!(result);
         }
     }
 }
