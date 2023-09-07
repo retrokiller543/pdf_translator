@@ -17,7 +17,7 @@ mod pdf_reader {
             let content = PdfReader::read_file_with_formatting(&file_path)?;
 
             Ok(PdfReader {
-                content: content,
+                content,
             })
         }
 
@@ -35,7 +35,7 @@ mod pdf_reader {
         }
 
         pub fn get_content(&self) -> Vec<(usize, String)> {
-            return self.content.clone();
+            self.content.clone()
         }
 
         fn read_pdf(path: &str) -> Result<String, Error> {
@@ -70,7 +70,7 @@ mod pdf_reader {
 
 
 mod translator {
-    use reqwest;
+    
     use serde::Serialize;
     use std::collections::HashMap;
 
@@ -139,7 +139,7 @@ mod config {
     use std::fs;
     use directories::ProjectDirs;
     use serde::{Deserialize, Serialize};
-    use toml;
+    
 
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Config {
@@ -207,7 +207,7 @@ mod config {
     }
     
     pub fn setup(args: Config) {    
-        if args.api_key == "" && args.project_id == "" && args.access_token == "" {
+        if args.api_key.is_empty() && args.project_id.is_empty() && args.access_token.is_empty() {
             println!("You must at least provide one of the following arguments '--api_key <API_KEY>', '--access_token <ACCESS_TOKEN>', '--project_id <PROJECT_ID>' ");
             return;
         }
@@ -232,9 +232,9 @@ mod install {
         let result = check_poppler();
         if result.is_ok() {
             println!("Poppler is already installed!");
-            return Ok(());
+            Ok(())
         } else {
-            return Err(result.err().unwrap());
+            Err(result.err().unwrap())
         }
     }
 
@@ -435,7 +435,7 @@ mod program {
 
     
     pub async fn run(file_path: String) {
-        let pdf_reader = pdf_reader::PdfReader::new(&file_path.as_str()).expect("Error reading pdf");
+        let pdf_reader = pdf_reader::PdfReader::new(file_path.as_str()).expect("Error reading pdf");
     
         match translator::translate_text(pdf_reader.get_content()).await {
             Ok(translated_content) => {
