@@ -188,14 +188,26 @@ mod config {
 
             if self.api_key.is_empty() && !prev_key.is_empty() {
                 self.api_key = prev_key;
+                #[cfg(debug_assertions)]
+                {
+                    println!("Updating api_key to match old config");
+                }
             }
 
             if self.project_id.is_empty() && !prev_project_id.is_empty() {
                 self.project_id = prev_project_id;
+                #[cfg(debug_assertions)]
+                {
+                    println!("Updating project_id to match old config");
+                }
             }
 
             if self.access_token.is_empty() && !prev_access_token.is_empty() {
                 self.access_token = prev_access_token;
+                #[cfg(debug_assertions)]
+                {
+                    println!("Updating access_token to match old config");
+                }
             }
 
             let config_str = toml::to_string(self)?;

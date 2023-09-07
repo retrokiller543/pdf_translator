@@ -55,3 +55,9 @@ test:
 clean:
 	@echo "Cleaning up..."
 	@cargo clean
+
+# Run clippy linter
+.PHONY: lint
+lint:
+	@echo "Running clippy..."
+	@cargo clippy --all-targets --all-features -- -D warnings
