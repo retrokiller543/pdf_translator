@@ -176,11 +176,10 @@ mod config {
             let mut prev_key: String = "".to_string();
             let mut prev_project_id: String = "".to_string();
             let mut prev_access_token: String = "".to_string();
-            if prev_conf.is_ok() {
-                let prev_conf = prev_conf.unwrap();
-                prev_key = prev_conf.api_key;
-                prev_project_id = prev_conf.project_id;
-                prev_access_token = prev_conf.access_token;
+            if let Ok(conf) = prev_conf {
+                prev_key = conf.api_key;
+                prev_project_id = conf.project_id;
+                prev_access_token = conf.access_token;
             }
             #[cfg(debug_assertions)]
             {
