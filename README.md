@@ -1,7 +1,17 @@
-
 # PDF Translator
 
-The PDF Translator is a command-line tool written in Rust. It allows you to translate the content of a PDF file using Google's Translation API.
+The PDF Translator is a command-line tool written in Rust. It allows you to translate the content of a PDF file using Google's Translation API. Currently, it only supports translating from English to Swedish, but more languages will be added in the future.
+
+## Meta Information
+
+- **Name:** pdf_translator
+- **Version:** 1.0.4
+- **Minimum Rust Version:** 1.72.0
+- **License:** MIT
+- **Repository:** [pdf_translator](https://github.com/retrokiller543/pdf_translator)
+- **Author:** Retrokiller543 (emil.schutt@gmail.com)
+- **Keywords:** pdf, translate, translator
+- **Categories:** command-line-utilities
 
 ## Installation
 
@@ -11,7 +21,7 @@ Before using the tool, ensure you have the required dependencies installed:
 
 ### Installing Poppler:
 
-_(You should get a question about installing poppler-utils when you run the tool for the first time but currently it might fail.)_
+_(You should get a question about installing poppler-utils when you run the tool for the first time, but currently, it might fail.)_
 
 On Linux:
 
@@ -23,6 +33,14 @@ On MacOS:
 
 ```bash
 brew install poppler
+```
+
+#### *_Experimental:_*
+
+pdf-translator can install poppler-utils for you. To do so, run:
+
+```bash
+pdf-translator --install
 ```
 
 On Windows, the installation is currently not supported. Please refer to Poppler's official documentation for manual installation.
