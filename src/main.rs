@@ -126,7 +126,7 @@ mod translator {
         #[cfg(debug_assertions)]
         {
             // if status is not 200, then print the response
-            if v["error"]["code"] != 200 {
+            if !v["error"]["code"].is_null() {
                 dbg!(v.clone());
             }
         }
@@ -170,12 +170,35 @@ mod config {
         }
     
         /// Saves the current configuration to the default config file.
-        pub fn save(&self) -> Result<(), Box<dyn std::error::Error>> {
+        pub fn save(&mut self) -> Result<(), Box<dyn std::error::Error>> {
             let config_path = Self::get_config_path()?;
+            let prev_conf = Self::load();
+            let mut prev_key: String = "".to_string();
+            let mut prev_project_id: String = "".to_string();
+            let mut prev_access_token: String = "".to_string();
+            if prev_conf.is_ok() {
+                let prev_conf = prev_conf.unwrap();
+                prev_key = prev_conf.api_key;
+                prev_project_id = prev_conf.project_id;
+                prev_access_token = prev_conf.access_token;
+            }
             #[cfg(debug_assertions)]
             {
                 dbg!(config_path.clone());
             }
+
+            if self.api_key.is_empty() && !prev_key.is_empty() {
+                self.api_key = prev_key;
+            }
+
+            if self.project_id.is_empty() && !prev_project_id.is_empty() {
+                self.project_id = prev_project_id;
+            }
+
+            if self.access_token.is_empty() && !prev_access_token.is_empty() {
+                self.access_token = prev_access_token;
+            }
+
             let config_str = toml::to_string(self)?;
             fs::write(config_path, config_str)?;
             Ok(())
@@ -206,7 +229,7 @@ mod config {
 
     }
     
-    pub fn setup(args: Config) {    
+    pub fn setup(mut args: Config) {    
         if args.api_key.is_empty() && args.project_id.is_empty() && args.access_token.is_empty() {
             println!("You must at least provide one of the following arguments '--api_key <API_KEY>', '--access_token <ACCESS_TOKEN>', '--project_id <PROJECT_ID>' ");
             return;
@@ -545,7 +568,7 @@ async fn main() {
                 println!("The installer for poppler is currently broken on Windows.\nPlease install poppler manually, or use a Linux or MacOS machine.")
             }
         } else if args.config {
-            let config = config::Config::new(args.api_key, args.project_id, args.access_token);
+            let mut config = config::Config::new(args.api_key, args.project_id, args.access_token);
             config::setup(config);
         } else {
             let path = args.path.unwrap();
