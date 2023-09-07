@@ -11,6 +11,8 @@ Before using the tool, ensure you have the required dependencies installed:
 
 ### Installing Poppler:
 
+_(You should get a question about installing poppler-utils when you run the tool for the first time but currently it might fail.)_
+
 On Linux:
 
 ```bash
@@ -54,12 +56,30 @@ pdf-translator --config --api_key YOUR_API_KEY --access_token YOUR_ACCESS_TOKEN 
 
 ## Development and Testing
 
+To build the tool in development mode:
+
+```bash
+make dev
+```
+
+To build the tool in release mode:
+
+```bash
+make release
+```
+
+To run development mode with arg:
+
+```bash
+make dev-<r/c/i/h/hf>
+```
+
 The tool comes with unit tests for various modules. To run the tests:
 
 ```bash
-cargo test
+make test
 ```
 
 ## Credits
 
-Developed by [Your Name/Company]. Contributions are welcome. Please refer to the contribution guidelines before making a pull request.
+Developed by Retrokiller543. Contributions are welcome. Please refer to the contribution guidelines before making a pull request.
