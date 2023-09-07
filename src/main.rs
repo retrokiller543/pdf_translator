@@ -153,6 +153,7 @@ mod config {
         /// Loads the configuration from the default config file.
         pub fn load() -> Result<Config, Box<dyn std::error::Error>> {
             let config_path = Self::get_config_path()?;
+            dbg!(config_path.clone());
             let config_str = fs::read_to_string(config_path)?;
             let config: Config = toml::from_str(&config_str)?;
             Ok(config)
@@ -161,6 +162,7 @@ mod config {
         /// Saves the current configuration to the default config file.
         pub fn save(&self) -> Result<(), Box<dyn std::error::Error>> {
             let config_path = Self::get_config_path()?;
+            dbg!(config_path.clone());
             let config_str = toml::to_string(self)?;
             fs::write(config_path, config_str)?;
             Ok(())
@@ -474,7 +476,7 @@ async fn main() {
         }
         #[cfg(target_os = "windows")]
         {
-            println!("The installer for poppler is currently broken on Windows. Please install poppler manually, or use a Linux or MacOS machine.")
+            println!("The installer for poppler is currently broken on Windows.\nPlease install poppler manually, or use a Linux or MacOS machine.")
         }
     } else if args.config {
         let config = config::Config::new(args.api_key, args.project_id, args.access_token);
