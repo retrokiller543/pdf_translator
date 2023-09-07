@@ -17,7 +17,7 @@ mod pdf_reader {
             let content = PdfReader::read_file_with_formatting(&file_path)?;
 
             Ok(PdfReader {
-                content: content,
+                content,
             })
         }
 
@@ -35,7 +35,7 @@ mod pdf_reader {
         }
 
         pub fn get_content(&self) -> Vec<(usize, String)> {
-            return self.content.clone();
+            self.content.clone()
         }
 
         fn read_pdf(path: &str) -> Result<String, Error> {
@@ -50,27 +50,26 @@ mod pdf_reader {
         }
     }
 
-    /*
     mod tests {
         #[allow(unused_imports)]
         use super::*;
 
         #[test]
         fn test_read_basic_pdf() {
-            let pdf_reader = PdfReader::new("./test-files/example.pdf").expect("Error reading pdf");
+            let path = format!("{}/test-files/example.pdf", env!("CARGO_MANIFEST_DIR"));
+            let pdf_reader = PdfReader::new(&path).expect("Error reading pdf");
             let content = pdf_reader.get_content();
             let correct_content: Vec<(usize, String)> = vec![(0, "Hello World!".to_string()), (1, "\u{c}".to_string())];
-
+        
             // compare correct content with the content from the pdf
             assert_eq!(content, correct_content);
         }
     }
-     */
 }
 
 
 mod translator {
-    use reqwest;
+    
     use serde::Serialize;
     use std::collections::HashMap;
 
@@ -123,6 +122,13 @@ mod translator {
 
     fn parse_response(response: &str) -> Result<String, serde_json::Error> {
         let v: serde_json::Value = serde_json::from_str(response)?;
+        #[cfg(debug_assertions)]
+        {
+            // if status is not 200, then print the response
+            if !v["error"]["code"].is_null() {
+                dbg!(v.clone());
+            }
+        }
         let translated_text = v["data"]["translations"][0]["translatedText"].as_str().unwrap_or_default().to_string();
         Ok(translated_text)
     }
@@ -132,7 +138,7 @@ mod config {
     use std::fs;
     use directories::ProjectDirs;
     use serde::{Deserialize, Serialize};
-    use toml;
+    
 
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Config {
@@ -153,14 +159,56 @@ mod config {
         /// Loads the configuration from the default config file.
         pub fn load() -> Result<Config, Box<dyn std::error::Error>> {
             let config_path = Self::get_config_path()?;
+            #[cfg(debug_assertions)]
+            {
+                dbg!(config_path.clone());
+            }
             let config_str = fs::read_to_string(config_path)?;
             let config: Config = toml::from_str(&config_str)?;
             Ok(config)
         }
     
         /// Saves the current configuration to the default config file.
-        pub fn save(&self) -> Result<(), Box<dyn std::error::Error>> {
+        pub fn save(&mut self) -> Result<(), Box<dyn std::error::Error>> {
             let config_path = Self::get_config_path()?;
+            let prev_conf = Self::load();
+            let mut prev_key: String = "".to_string();
+            let mut prev_project_id: String = "".to_string();
+            let mut prev_access_token: String = "".to_string();
+            if let Ok(conf) = prev_conf {
+                prev_key = conf.api_key;
+                prev_project_id = conf.project_id;
+                prev_access_token = conf.access_token;
+            }
+            #[cfg(debug_assertions)]
+            {
+                dbg!(config_path.clone());
+            }
+
+            if self.api_key.is_empty() && !prev_key.is_empty() {
+                self.api_key = prev_key;
+                #[cfg(debug_assertions)]
+                {
+                    println!("Updating api_key to match old config");
+                }
+            }
+
+            if self.project_id.is_empty() && !prev_project_id.is_empty() {
+                self.project_id = prev_project_id;
+                #[cfg(debug_assertions)]
+                {
+                    println!("Updating project_id to match old config");
+                }
+            }
+
+            if self.access_token.is_empty() && !prev_access_token.is_empty() {
+                self.access_token = prev_access_token;
+                #[cfg(debug_assertions)]
+                {
+                    println!("Updating access_token to match old config");
+                }
+            }
+
             let config_str = toml::to_string(self)?;
             fs::write(config_path, config_str)?;
             Ok(())
@@ -191,8 +239,8 @@ mod config {
 
     }
     
-    pub fn setup(args: Config) {    
-        if args.api_key == "" && args.project_id == "" && args.access_token == "" {
+    pub fn setup(mut args: Config) {    
+        if args.api_key.is_empty() && args.project_id.is_empty() && args.access_token.is_empty() {
             println!("You must at least provide one of the following arguments '--api_key <API_KEY>', '--access_token <ACCESS_TOKEN>', '--project_id <PROJECT_ID>' ");
             return;
         }
@@ -200,26 +248,64 @@ mod config {
         args.save().expect("Failed to save configuration");
         println!("Configuration saved successfully!");
     }
+
+    mod tests {
+        #[allow(unused_imports)]
+        use super::*;
+        #[allow(unused_imports)]
+        use std::path::Path;
+
+        #[test]
+        fn test_save_config() {
+            // Backup current config (if exists)
+            let backup_path = format!("{}/config_backup.toml", env!("CARGO_MANIFEST_DIR"));
+            if let Ok(current_config) = Config::load() {
+                fs::write(&backup_path, toml::to_string(&current_config).unwrap()).unwrap();
+            }
+
+            // Test saving a dummy config
+            let mut dummy_config = Config::new("dummy_key".to_string(), "dummy_project".to_string(), "dummy_token".to_string());
+            let save_result = dummy_config.save();
+            assert!(save_result.is_ok());
+
+            // Restore the backed up config
+            if Path::new(&backup_path).exists() {
+                fs::copy(backup_path.clone(), format!("{}/config.toml", env!("CARGO_MANIFEST_DIR"))).unwrap();
+                fs::remove_file(backup_path).unwrap();
+            }
+        }
+    }
     
 }
 
 /// The `install` module which provides functions to check if `poppler-utils` is installed and install it if it is not.
 mod install {
     use std::process::Command;
-    use std::io::Error;
+    #[cfg(target_os = "linux")]
+    use rpassword::read_password;
+    #[cfg(target_os = "macos")]
     use rpassword::read_password;
 
     /// This function checks if `poppler-utils` is installed and installs it if it is not.
     pub fn run() -> Result<(), String> {
-        let _ = check_poppler();
-        Ok(())
+        println!("Checking if poppler-utils is installed...");
+        let result = check_poppler();
+        if result.is_ok() {
+            Ok(())
+        } else {
+            Err(result.err().unwrap())
+        }
     }
 
     #[cfg(target_os = "linux")]
     fn install() -> Result<(), String> {
         let installed_manager = get_package_manager();
+        #[cfg(debug_assertions)]
+        {
+            dbg!(installed_manager.clone());
+        }
 
-        if installed_manager == "" {
+        if installed_manager.is_empty() {
             return Err("No package manager is installed".to_string());
         }
 
@@ -227,14 +313,14 @@ mod install {
         print!("Please enter your sudo password: ");
         let password = read_password().expect("Failed to read password");
         
-        let error_msg = "Error installing using package manager '".to_string() + &installed_manager.as_str() + "'";
+        let error_msg = "Error installing using package manager '".to_owned() + installed_manager.as_str() + "'";
 
         // Pipe the password to sudo
         Command::new("sh")
             .arg("-c")
             .arg(format!("echo {} | sudo -S {} install -y poppler-utils", password.trim(), installed_manager))
             .spawn()
-            .expect(error_msg.as_str());
+            .unwrap_or_else(|_| { panic!("{}", error_msg) });
         Ok(())
     }
 
@@ -288,6 +374,11 @@ mod install {
             .output()
             .expect("Error: 'which' command not found!");
 
+        #[cfg(debug_assertions)]
+        {
+            dbg!(output.status.clone());
+        }
+
         // If the command succeeded, then brew exists on the system
         if output.status.success() {
             return true;
@@ -334,19 +425,31 @@ mod install {
         false
     }
 
-    fn check_poppler() -> Result<(), Error> {
-        let output = Command::new("pdftotext")
+    fn check_poppler() -> Result<(), String> {
+        let output_result = Command::new("pdftotext")
             .arg("-v")
-            .output()?;
+            .output();
     
-        let text = String::from_utf8(output.stderr).expect("Not UTF-8");
+        match output_result {
+            Ok(output) => {
+                let text = String::from_utf8(output.stderr).unwrap_or_else(|_| String::from(""));
     
-        if text.contains("Poppler") {
-            Ok(())
-        } else {
-            println!("Poppler is not installed.");
-            let _ = install();
-            Ok(())
+                if text.contains("Poppler") {
+                    Ok(())
+                } else {
+                    Err(String::from("Error occured while checking if poppler is installed."))
+                }
+            },
+            Err(_) => {
+                println!("Poppler is not installed.");
+                let result = install();
+                if result.is_ok() {
+                    println!("Poppler installed successfully!");
+                    Ok(())
+                } else {
+                    Err(result.err().unwrap_or_else(|| String::from("Error installing Poppler")))
+                }
+            }
         }
     }
 
@@ -354,30 +457,25 @@ mod install {
         #[allow(unused_imports)]
         use super::*;
 
-        /*
+        #[cfg(target_os = "linux")]
         #[test]
-        fn test_check_poppler() {
-            let result = check_poppler();
-            assert!(result.is_err());
+        fn test_linux_package_manager_check() {
+            let result = get_package_manager();
+            assert!(!result.is_empty());
         }
-        */
+
+        #[cfg(target_os = "macos")]
         #[test]
-        fn test_check_package_manager() {
-            #[cfg(target_os = "linux")]
-            {
-                let result = get_package_manager();
-                assert!(result != "");
-            }
-            #[cfg(target_os = "macos")]
-            {
-                let result = check_brew();
-                assert!(result == true);
-            }
-            #[cfg(target_os = "windows")]
-            {
-                let result = check_chocolaty();
-                assert!(result == true);
-            }
+        fn test_macos_brew_check() {
+            let result = check_brew();
+            assert!(result);
+        }
+
+        #[cfg(target_os = "windows")]
+        #[test]
+        fn test_windows_chocolaty_check() {
+            let result = check_chocolaty();
+            assert!(result);
         }
     }
 }
@@ -391,7 +489,7 @@ mod program {
 
     
     pub async fn run(file_path: String) {
-        let pdf_reader = pdf_reader::PdfReader::new(&file_path.as_str()).expect("Error reading pdf");
+        let pdf_reader = pdf_reader::PdfReader::new(file_path.as_str()).expect("Error reading pdf");
     
         match translator::translate_text(pdf_reader.get_content()).await {
             Ok(translated_content) => {
@@ -407,22 +505,23 @@ mod program {
 }
 
 use clap::Parser;
-#[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
+#[derive(Parser, Debug, Clone)]
+#[command(author, version, about, name = "pdf-translator")]
 struct Args {
-    #[arg(short, long)]
+    #[arg(short, long, long_help = "The path to the pdf file you want to translate")]
     path: Option<String>,
-    #[arg(short, long, default_value = "false")]
+    #[arg(short, long, default_value = "false", long_help = "Install poppler on your system, requires sudo or root access\nCurrently only works on Linux and MacOS")]
     install: bool,
-    #[arg(short, long, default_value = "false")]
+    #[arg(short, long, default_value = "false", long_help = "Setup the configuration file,\nneeds atleast one of these:\n\t'--api-key'\n\t'--access-token'\n\t'--project-id'")]
     config: bool,
-    #[arg(long, default_value = "")]
+    #[arg(long, default_value = "", long_help = "The API key for the Google Cloud Platform")]
     api_key: String,
-    #[arg(long, default_value = "")]
+    #[arg(long, default_value = "", long_help = "The project ID for the Google Cloud Platform")]
     access_token: String,
-    #[arg(long, default_value = "")]
+    #[arg(long, default_value = "", long_help = "The access token for the Google Cloud Platform")]
     project_id: String,
-    #[arg(short, long, default_value = "false")]
+    #[cfg(debug_assertions)]
+    #[arg(short, long, default_value = "false", long_help = "Run the program in debug mode,\nneeds a path to a pdf file called 'example.pdf' in the 'test-files' folder")]
     debug: bool,
 }
 
@@ -431,15 +530,80 @@ struct Args {
 async fn main() {
     let args = Args::parse();
 
-    if args.debug {
-        program::run("./test-files/example.pdf".to_string()).await;
-    } else if args.install {
-        let _result = install::run();
-    } else if args.config {
-        let config = config::Config::new(args.api_key, args.project_id, args.access_token);
-        config::setup(config);
-    } else {
-        let path = args.path.unwrap();
-        program::run(path).await;
+    #[cfg(debug_assertions)]
+    {
+        #[cfg(target_os = "linux")]
+        let target_os = "linux";
+        #[cfg(target_os = "macos")]
+        let target_os = "macos";
+        #[cfg(target_os = "windows")]
+        let target_os = "windows";
+        dbg!("{:?}", args.clone());
+        dbg!(target_os);
+        if args.debug {
+            program::run("./test-files/example.pdf".to_string()).await;
+        } else if args.install {
+            #[cfg(target_os = "linux")]
+            {
+                let result = install::run();
+                if result.is_ok() {
+                    println!("Poppler installed successfully!");
+                } else {
+                    println!("Error installing poppler: {}", result.err().unwrap());
+                }
+            }
+            #[cfg(target_os = "macos")]
+            {
+                let result = install::run();
+                if result.is_ok() {
+                    println!("Poppler installed successfully!");
+                } else {
+                    println!("Error installing poppler: {}", result.err().unwrap());
+                }
+            }
+            #[cfg(target_os = "windows")]
+            {
+                println!("The installer for poppler is currently broken on Windows.\nPlease install poppler manually, or use a Linux or MacOS machine.")
+            }
+        } else if args.config {
+            let config = config::Config::new(args.api_key, args.project_id, args.access_token);
+            config::setup(config);
+        } else {
+            let path = args.path.unwrap();
+            program::run(path).await;
+        }
+    }
+    #[cfg(not(debug_assertions))]
+    {
+        if args.install {
+            #[cfg(target_os = "linux")]
+            {
+                let result = install::run();
+                if result.is_ok() {
+                    println!("Poppler installed successfully!");
+                } else {
+                    println!("Error installing poppler: {}", result.err().unwrap());
+                }
+            }
+            #[cfg(target_os = "macos")]
+            {
+                let result = install::run();
+                if result.is_ok() {
+                    println!("Poppler installed successfully!");
+                } else {
+                    println!("Error installing poppler: {}", result.err().unwrap());
+                }
+            }
+            #[cfg(target_os = "windows")]
+            {
+                println!("The installer for poppler is currently broken on Windows.\nPlease install poppler manually, or use a Linux or MacOS machine.")
+            }
+        } else if args.config {
+            let mut config = config::Config::new(args.api_key, args.project_id, args.access_token);
+            config::setup(config);
+        } else {
+            let path = args.path.unwrap();
+            program::run(path).await;
+        }
     }
 }
