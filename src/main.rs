@@ -246,7 +246,7 @@ mod install {
             dbg!(installed_manager.clone());
         }
 
-        if installed_manager == "" {
+        if installed_manager.is_empty() {
             return Err("No package manager is installed".to_string());
         }
 
@@ -254,14 +254,14 @@ mod install {
         print!("Please enter your sudo password: ");
         let password = read_password().expect("Failed to read password");
         
-        let error_msg = "Error installing using package manager '".to_string() + &installed_manager.as_str() + "'";
+        let error_msg = "Error installing using package manager '" + installed_manager.as_str() + "'";
 
         // Pipe the password to sudo
         Command::new("sh")
             .arg("-c")
             .arg(format!("echo {} | sudo -S {} install -y poppler-utils", password.trim(), installed_manager))
             .spawn()
-            .expect(error_msg.as_str());
+            .unwrap_or_else(|_| { panic!("{}", error_msg) });
         Ok(())
     }
 
@@ -410,7 +410,7 @@ mod install {
             #[cfg(target_os = "linux")]
             {
                 let result = get_package_manager();
-                assert!(result != "");
+                assert!(!result.is_empty);
             }
             #[cfg(target_os = "macos")]
             {
