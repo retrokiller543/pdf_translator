@@ -206,13 +206,21 @@ mod config {
 /// The `install` module which provides functions to check if `poppler-utils` is installed and install it if it is not.
 mod install {
     use std::process::Command;
-    use std::io::Error;
+    #[cfg(target_os = "linux")]
+    use rpassword::read_password;
+    #[cfg(target_os = "macos")]
     use rpassword::read_password;
 
     /// This function checks if `poppler-utils` is installed and installs it if it is not.
     pub fn run() -> Result<(), String> {
-        let _ = check_poppler();
-        Ok(())
+        println!("Checking if poppler-utils is installed...");
+        let result = check_poppler();
+        if result.is_ok() {
+            println!("Poppler is already installed!");
+            return Ok(());
+        } else {
+            return Err(result.err().unwrap());
+        }
     }
 
     #[cfg(target_os = "linux")]
@@ -334,19 +342,31 @@ mod install {
         false
     }
 
-    fn check_poppler() -> Result<(), Error> {
-        let output = Command::new("pdftotext")
+    fn check_poppler() -> Result<(), String> {
+        let output_result = Command::new("pdftotext")
             .arg("-v")
-            .output()?;
+            .output();
     
-        let text = String::from_utf8(output.stderr).expect("Not UTF-8");
+        match output_result {
+            Ok(output) => {
+                let text = String::from_utf8(output.stderr).unwrap_or_else(|_| String::from(""));
     
-        if text.contains("Poppler") {
-            Ok(())
-        } else {
-            println!("Poppler is not installed.");
-            let _ = install();
-            Ok(())
+                if text.contains("Poppler") {
+                    Ok(())
+                } else {
+                    Err(String::from("Error occured while checking if poppler is installed."))
+                }
+            },
+            Err(_) => {
+                println!("Poppler is not installed.");
+                let result = install();
+                if result.is_ok() {
+                    println!("Poppler installed successfully!");
+                    Ok(())
+                } else {
+                    Err(result.err().unwrap_or_else(|| String::from("Error installing Poppler")))
+                }
+            }
         }
     }
 
