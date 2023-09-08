@@ -1,12 +1,13 @@
 name: Test, Build and Publish
 
 on:
-  pull_request:
+  push:
     branches: [ "master" ]
 
 env:
   CARGO_TERM_COLOR: always
   IMAGE_NAME: "pdf_translator"
+  NEW_VERSION: "v0.0.0"
 
 jobs:
   build_and_test:
@@ -56,7 +57,7 @@ jobs:
         key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
           ${{ runner.os }}-cargo-target-
-    
+
     - name:
       run: cargo test --all
 
@@ -86,19 +87,19 @@ jobs:
   publish_github_release:
     needs: build_and_test
     runs-on: ubuntu-latest
-  
+
     steps:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-  
+
     - name: Setup Rust
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
         toolchain: stable
         override: true
-  
+
     - name: Download all built binaries
       uses: actions/download-artifact@v2
 
@@ -106,7 +107,7 @@ jobs:
       run: |
         chmod +x increment_version.sh
         ./increment_version.sh
-  
+
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GH_PAT }}"

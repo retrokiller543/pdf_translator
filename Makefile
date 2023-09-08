@@ -1,6 +1,12 @@
+# Include .env file if it exists
+-include .env
+export
+
 # Default target to run the program in dev mode
 .PHONY: all
 all: dev
+
+ACCESS_TOKEN := $(shell gcloud auth print-access-token)
 
 # Build and run in dev mode
 .PHONY: dev
@@ -18,7 +24,7 @@ dev-r:
 .PHONY: dev-c
 dev-c:
 	@echo "Building in dev mode and running config..."
-	@cargo run -q -- -c --project-id <PROJEC_ID> --access-token <ACCESS_TOKEN> --api-key <API_KEY>
+	@cargo run -q -- -c --project-id $(PROJECT_ID) --access-token $(ACCESS_TOKEN) --api-key $(API_KEY)
 
 # Build and run in dev mode with install arg
 .PHONY: dev-i
@@ -48,7 +54,7 @@ release:
 .PHONY: config
 config:
 	@echo "Building and running config..."
-	@cargo run -r -q -- -c --project-id <PROJEC_ID> --api-key <API_KEY> --access-token <ACCESS_TOKEN>
+	@cargo run -r -q -- -c --project-id $(PROJECT_ID) --api-key $(API_KEY) --access-token $(ACCESS_TOKEN)
 
 # Run tests
 .PHONY: test
