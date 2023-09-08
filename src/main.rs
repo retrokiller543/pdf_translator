@@ -534,7 +534,7 @@ mod program {
 
 use clap::Parser;
 
-static SUPPORTED_LANGUAGES: &[( &'static str, &'static str)] = &[
+static SUPPORTED_LANGUAGES: &[( &str, &str)] = &[
     ("Afrikaans", "af"),
     ("Albanian", "sq"),
     ("Amharic", "am"),
