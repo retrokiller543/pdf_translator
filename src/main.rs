@@ -1,8 +1,8 @@
 // create a module for reading the text of the pdf file and also checking if poppler is installed
 mod pdf_reader {
-    use std::process::Command;
-    use std::io::{Error, Read};
     use crate::install;
+    use std::io::{Error, Read};
+    use std::process::Command;
 
     pub struct PdfReader {
         content: Vec<(usize, String)>,
@@ -16,21 +16,22 @@ mod pdf_reader {
             let file_path = path.replace(".pdf", ".txt");
             let content = PdfReader::read_file_with_formatting(&file_path)?;
 
-            Ok(PdfReader {
-                content,
-            })
+            Ok(PdfReader { content })
         }
 
-        fn read_file_with_formatting(file_path: &str) -> Result<Vec<(usize, String)>, std::io::Error> {
+        fn read_file_with_formatting(
+            file_path: &str,
+        ) -> Result<Vec<(usize, String)>, std::io::Error> {
             let mut file = std::fs::File::open(file_path)?;
             let mut contents = String::new();
             file.read_to_string(&mut contents)?;
-        
-            let lines_with_numbers: Vec<(usize, String)> = contents.lines()
+
+            let lines_with_numbers: Vec<(usize, String)> = contents
+                .lines()
                 .enumerate()
                 .map(|(idx, line)| (idx, line.to_string()))
                 .collect();
-        
+
             Ok(lines_with_numbers)
         }
 
@@ -43,9 +44,9 @@ mod pdf_reader {
                 .arg(path)
                 .arg("-layout")
                 .output()?;
-    
+
             let text = String::from_utf8(output.stdout).expect("Not UTF-8");
-    
+
             Ok(text)
         }
     }
@@ -59,23 +60,24 @@ mod pdf_reader {
             let path = format!("{}/test-files/example.pdf", env!("CARGO_MANIFEST_DIR"));
             let pdf_reader = PdfReader::new(&path).expect("Error reading pdf");
             let content = pdf_reader.get_content();
-            let correct_content: Vec<(usize, String)> = vec![(0, "Hello World!".to_string()), (1, "\u{c}".to_string())];
-        
+            let correct_content: Vec<(usize, String)> =
+                vec![(0, "Hello World!".to_string()), (1, "\u{c}".to_string())];
+
             // compare correct content with the content from the pdf
             assert_eq!(content, correct_content);
         }
     }
 }
 
-
 mod translator {
-    
+
     use serde::Serialize;
     use std::collections::HashMap;
 
     use crate::config;
 
-    const GOOGLE_TRANSLATE_API_ENDPOINT: &str = "https://translation.googleapis.com/language/translate/v2";
+    const GOOGLE_TRANSLATE_API_ENDPOINT: &str =
+        "https://translation.googleapis.com/language/translate/v2";
 
     #[derive(Serialize)]
     struct TranslateRequest {
@@ -93,11 +95,13 @@ mod translator {
         pub target: String,
     }
 
-    pub async fn translate_text(input: TranslateInput) -> Result<Vec<(usize, String)>, reqwest::Error> {
+    pub async fn translate_text(
+        input: TranslateInput,
+    ) -> Result<Vec<(usize, String)>, reqwest::Error> {
         let config: config::Config = config::Config::load().expect("Failed to load configuration");
         let client = reqwest::Client::new();
         let mut translated_texts = Vec::new();
-    
+
         for (line_number, line) in input.formatted_content {
             let mut payload = HashMap::new();
             payload.insert("q", line.clone());
@@ -105,9 +109,9 @@ mod translator {
             payload.insert("target", input.target.clone());
             payload.insert("format", "text".to_string());
             payload.insert("key", config.get_api_key());
-    
+
             let access_token = "Bearer ".to_string() + config.get_access_token().as_str();
-    
+
             let response: serde_json::Value = client
                 .post(GOOGLE_TRANSLATE_API_ENDPOINT)
                 .header("Authorization", access_token)
@@ -118,14 +122,14 @@ mod translator {
                 .await?
                 .json()
                 .await?;
-    
-            let translated_line = parse_response(&response.to_string()).expect("Error parsing response");
+
+            let translated_line =
+                parse_response(&response.to_string()).expect("Error parsing response");
             translated_texts.push((line_number, translated_line));
         }
-    
+
         Ok(translated_texts)
     }
-    
 
     fn parse_response(response: &str) -> Result<String, serde_json::Error> {
         let v: serde_json::Value = serde_json::from_str(response)?;
@@ -136,16 +140,18 @@ mod translator {
                 dbg!(v.clone());
             }
         }
-        let translated_text = v["data"]["translations"][0]["translatedText"].as_str().unwrap_or_default().to_string();
+        let translated_text = v["data"]["translations"][0]["translatedText"]
+            .as_str()
+            .unwrap_or_default()
+            .to_string();
         Ok(translated_text)
     }
 }
 
 mod config {
-    use std::fs;
     use directories::ProjectDirs;
     use serde::{Deserialize, Serialize};
-    
+    use std::fs;
 
     #[derive(Debug, Serialize, Deserialize, Clone)]
     pub struct Config {
@@ -162,7 +168,7 @@ mod config {
                 access_token,
             }
         }
-    
+
         /// Loads the configuration from the default config file.
         pub fn load() -> Result<Config, Box<dyn std::error::Error>> {
             let config_path = Self::get_config_path()?;
@@ -174,7 +180,7 @@ mod config {
             let config: Config = toml::from_str(&config_str)?;
             Ok(config)
         }
-    
+
         /// Saves the current configuration to the default config file.
         pub fn save(&mut self) -> Result<(), Box<dyn std::error::Error>> {
             let config_path = Self::get_config_path()?;
@@ -232,7 +238,7 @@ mod config {
         pub fn get_access_token(&self) -> String {
             self.access_token.clone()
         }
-    
+
         /// Determines the path for the configuration file using the `directories` crate.
         fn get_config_path() -> Result<std::path::PathBuf, Box<dyn std::error::Error>> {
             let proj_dirs = ProjectDirs::from("com", "pdf_translator_company", "PDF Translator")
@@ -243,15 +249,14 @@ mod config {
             }
             Ok(config_dir.join("config.toml"))
         }
-
     }
-    
-    pub fn setup(mut args: Config) {    
+
+    pub fn setup(mut args: Config) {
         if args.api_key.is_empty() && args.project_id.is_empty() && args.access_token.is_empty() {
             println!("You must at least provide one of the following arguments '--api_key <API_KEY>', '--access_token <ACCESS_TOKEN>', '--project_id <PROJECT_ID>' ");
             return;
         }
-    
+
         args.save().expect("Failed to save configuration");
         println!("Configuration saved successfully!");
     }
@@ -271,27 +276,34 @@ mod config {
             }
 
             // Test saving a dummy config
-            let mut dummy_config = Config::new("dummy_key".to_string(), "dummy_project".to_string(), "dummy_token".to_string());
+            let mut dummy_config = Config::new(
+                "dummy_key".to_string(),
+                "dummy_project".to_string(),
+                "dummy_token".to_string(),
+            );
             let save_result = dummy_config.save();
             assert!(save_result.is_ok());
 
             // Restore the backed up config
             if Path::new(&backup_path).exists() {
-                fs::copy(backup_path.clone(), format!("{}/config.toml", env!("CARGO_MANIFEST_DIR"))).unwrap();
+                fs::copy(
+                    backup_path.clone(),
+                    format!("{}/config.toml", env!("CARGO_MANIFEST_DIR")),
+                )
+                .unwrap();
                 fs::remove_file(backup_path).unwrap();
             }
         }
     }
-    
 }
 
 /// The `install` module which provides functions to check if `poppler-utils` is installed and install it if it is not.
 mod install {
-    use std::process::Command;
     #[cfg(target_os = "linux")]
     use rpassword::read_password;
     #[cfg(target_os = "macos")]
     use rpassword::read_password;
+    use std::process::Command;
 
     /// This function checks if `poppler-utils` is installed and installs it if it is not.
     pub fn run() -> Result<(), String> {
@@ -319,15 +331,21 @@ mod install {
         // Prompt user for password
         print!("Please enter your sudo password: ");
         let password = read_password().expect("Failed to read password");
-        
-        let error_msg = "Error installing using package manager '".to_owned() + installed_manager.as_str() + "'";
+
+        let error_msg = "Error installing using package manager '".to_owned()
+            + installed_manager.as_str()
+            + "'";
 
         // Pipe the password to sudo
         Command::new("sh")
             .arg("-c")
-            .arg(format!("echo {} | sudo -S {} install -y poppler-utils", password.trim(), installed_manager))
+            .arg(format!(
+                "echo {} | sudo -S {} install -y poppler-utils",
+                password.trim(),
+                installed_manager
+            ))
             .spawn()
-            .unwrap_or_else(|_| { panic!("{}", error_msg) });
+            .unwrap_or_else(|_| panic!("{}", error_msg));
         Ok(())
     }
 
@@ -357,18 +375,29 @@ mod install {
         let password = read_password().expect("Failed to read password");
         let error_msg = "Error installing using package manager 'brew'";
         let poppler_install_cmd = "brew install poppler";
-        if !check_brew(){
-            let brew_install = format!("/bin/bash -c {}", "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)");
+        if !check_brew() {
+            let brew_install = format!(
+                "/bin/bash -c {}",
+                "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            );
             Command::new("sh")
                 .arg("-c")
-                .arg(format!("echo {} | sudo -S {}", password.trim(), brew_install))
+                .arg(format!(
+                    "echo {} | sudo -S {}",
+                    password.trim(),
+                    brew_install
+                ))
                 .spawn()
                 .expect(error_msg);
-            }
+        }
 
         Command::new("sh")
             .arg("-c")
-            .arg(format!("echo {} | sudo -S {}", password.trim(), poppler_install_cmd))
+            .arg(format!(
+                "echo {} | sudo -S {}",
+                password.trim(),
+                poppler_install_cmd
+            ))
             .spawn()
             .expect(error_msg);
         Ok(())
@@ -398,7 +427,7 @@ mod install {
     fn install() -> Result<(), String> {
         let error_msg_choco = "Error installing chocolaty";
         let error_msg_poppler = "Error installing using package manager 'choco'";
-        
+
         // Check if Chocolaty is installed, if not then install it
         if !check_chocolaty() {
             Command::new("powershell")
@@ -407,7 +436,7 @@ mod install {
                 .spawn()
                 .expect(error_msg_choco);
         }
-        
+
         // Install poppler-utils using Chocolaty
         Command::new("choco")
             .arg("install")
@@ -433,20 +462,20 @@ mod install {
     }
 
     fn check_poppler() -> Result<(), String> {
-        let output_result = Command::new("pdftotext")
-            .arg("-v")
-            .output();
-    
+        let output_result = Command::new("pdftotext").arg("-v").output();
+
         match output_result {
             Ok(output) => {
                 let text = String::from_utf8(output.stderr).unwrap_or_else(|_| String::from(""));
-    
+
                 if text.contains("Poppler") {
                     Ok(())
                 } else {
-                    Err(String::from("Error occured while checking if poppler is installed."))
+                    Err(String::from(
+                        "Error occured while checking if poppler is installed.",
+                    ))
                 }
-            },
+            }
             Err(_) => {
                 println!("Poppler is not installed.");
                 let result = install();
@@ -454,7 +483,9 @@ mod install {
                     println!("Poppler installed successfully!");
                     Ok(())
                 } else {
-                    Err(result.err().unwrap_or_else(|| String::from("Error installing Poppler")))
+                    Err(result
+                        .err()
+                        .unwrap_or_else(|| String::from("Error installing Poppler")))
                 }
             }
         }
@@ -487,21 +518,21 @@ mod install {
     }
 }
 
-
 mod program {
-    use std::fs::File;
-    use std::io::Write;
     use crate::pdf_reader;
     use crate::translator;
+    use std::fs::File;
+    use std::io::Write;
 
     pub struct Args {
         pub file_path: String,
         pub source: String,
         pub target: String,
     }
-    
+
     pub async fn run(mut args: Args) {
-        let pdf_reader = pdf_reader::PdfReader::new(args.file_path.as_str()).expect("Error reading pdf");
+        let pdf_reader =
+            pdf_reader::PdfReader::new(args.file_path.as_str()).expect("Error reading pdf");
 
         if args.source.is_empty() {
             println!("No source language provided, defaulting to 'en'");
@@ -518,7 +549,7 @@ mod program {
             source: args.source,
             target: args.target,
         };
-    
+
         match translator::translate_text(request).await {
             Ok(translated_content) => {
                 let mut file = File::create("translated_text.txt").expect("Error creating file");
@@ -526,7 +557,7 @@ mod program {
                     writeln!(file, "{}: {}", line_number, line).expect("Error writing to file");
                 }
                 println!("Translation complete");
-            },
+            }
             Err(e) => println!("Error translating: {}", e),
         }
     }
@@ -534,7 +565,7 @@ mod program {
 
 use clap::Parser;
 
-static SUPPORTED_LANGUAGES: &[( &str, &str)] = &[
+static SUPPORTED_LANGUAGES: &[(&str, &str)] = &[
     ("Afrikaans", "af"),
     ("Albanian", "sq"),
     ("Amharic", "am"),
@@ -671,32 +702,77 @@ static SUPPORTED_LANGUAGES: &[( &str, &str)] = &[
     ("Xhosa", "xh"),
     ("Yiddish", "yi"),
     ("Yoruba", "yo"),
-    ("Zulu", "zu")
+    ("Zulu", "zu"),
 ];
 
 #[derive(Parser, Debug, Clone)]
 #[command(author, version, about, name = "pdf-translator")]
 struct Args {
-    #[arg(short, long, long_help = "The path to the pdf file you want to translate")]
+    #[arg(
+        short,
+        long,
+        long_help = "The path to the pdf file you want to translate"
+    )]
     path: Option<String>,
-    #[arg(short, long, default_value = "en", long_help = "The source language of the pdf file")]
+    #[arg(
+        short,
+        long,
+        default_value = "en",
+        long_help = "The source language of the pdf file"
+    )]
     source: String,
-    #[arg(short, long, default_value = "sv", long_help = "The target language of the output text")]
+    #[arg(
+        short,
+        long,
+        default_value = "sv",
+        long_help = "The target language of the output text"
+    )]
     target: String,
-    #[arg(long, default_value = "false", long_help = "Prints the list of supported languages")]
+    #[arg(
+        long,
+        default_value = "false",
+        long_help = "Prints the list of supported languages"
+    )]
     list: bool,
-    #[arg(short, long, default_value = "false", long_help = "Install poppler on your system, requires sudo or root access\nCurrently only works on Linux and MacOS")]
+    #[arg(
+        short,
+        long,
+        default_value = "false",
+        long_help = "Install poppler on your system, requires sudo or root access\nCurrently only works on Linux and MacOS"
+    )]
     install: bool,
-    #[arg(short, long, default_value = "false", long_help = "Setup the configuration file,\nneeds atleast one of these:\n\t'--api-key'\n\t'--access-token'\n\t'--project-id'")]
+    #[arg(
+        short,
+        long,
+        default_value = "false",
+        long_help = "Setup the configuration file,\nneeds atleast one of these:\n\t'--api-key'\n\t'--access-token'\n\t'--project-id'"
+    )]
     config: bool,
-    #[arg(long, default_value = "", long_help = "The API key for the Google Cloud Platform")]
+    #[arg(
+        long,
+        default_value = "",
+        long_help = "The API key for the Google Cloud Platform"
+    )]
     api_key: String,
-    #[arg(long, default_value = "", long_help = "The project ID for the Google Cloud Platform")]
+    #[arg(
+        long,
+        default_value = "",
+        long_help = "The project ID for the Google Cloud Platform"
+    )]
     access_token: String,
-    #[arg(long, default_value = "", long_help = "The access token for the Google Cloud Platform")]
+    #[arg(
+        long,
+        default_value = "",
+        long_help = "The access token for the Google Cloud Platform"
+    )]
     project_id: String,
     #[cfg(debug_assertions)]
-    #[arg(short, long, default_value = "false", long_help = "Run the program in debug mode,\nneeds a path to a pdf file called 'example.pdf' in the 'test-files' folder")]
+    #[arg(
+        short,
+        long,
+        default_value = "false",
+        long_help = "Run the program in debug mode,\nneeds a path to a pdf file called 'example.pdf' in the 'test-files' folder"
+    )]
     debug: bool,
 }
 
@@ -704,14 +780,23 @@ fn list_langs() {
     const NAME_WIDTH: usize = 30;
     const CODE_WIDTH: usize = 12;
 
-    println!("{:<width$} | {:<CODE_WIDTH$}", "Language", "ISO-639 Code", width = NAME_WIDTH);
+    println!(
+        "{:<width$} | {:<CODE_WIDTH$}",
+        "Language",
+        "ISO-639 Code",
+        width = NAME_WIDTH
+    );
     println!("{:-<width$}---{:-<CODE_WIDTH$}", "", "", width = NAME_WIDTH);
 
     for &(lang, code) in SUPPORTED_LANGUAGES.iter() {
-        println!("{:<width$} -> {:<CODE_WIDTH$}", lang, code, width = NAME_WIDTH);
+        println!(
+            "{:<width$} -> {:<CODE_WIDTH$}",
+            lang,
+            code,
+            width = NAME_WIDTH
+        );
     }
 }
-
 
 #[tokio::main]
 async fn main() {
@@ -764,7 +849,7 @@ async fn main() {
             let config = config::Config::new(args.api_key, args.project_id, args.access_token);
             config::setup(config);
         } else {
-            let run_args = program::Args{
+            let run_args = program::Args {
                 file_path: args.path.unwrap(),
                 source: "en".to_string(),
                 target: "sv".to_string(),
@@ -803,7 +888,7 @@ async fn main() {
             let mut config = config::Config::new(args.api_key, args.project_id, args.access_token);
             config::setup(config);
         } else {
-            let run_args = program::Args{
+            let run_args = program::Args {
                 file_path: args.path.unwrap(),
                 source: "en".to_string(),
                 target: "sv".to_string(),
