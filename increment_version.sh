@@ -10,10 +10,6 @@ messages=$(git log $tag..HEAD --pretty=format:%s)
 
 versioning_commits=$(echo "$messages" | grep -E "^(feat|major|fix|minor|chore|refactor|patch):")
 
-echo $(git log --oneline -n 5)
-echo $(git tag)
-
-
 if [ -z "$versioning_commits" ]; then
   echo "No versioning commits detected. No version increment needed."
   exit 0
@@ -38,8 +34,6 @@ else
 fi
 
 version="$major.$minor.$patch"
-echo "Current version is $tag"
-echo "New version is $version"
 
 # Update the version in Cargo.toml
 echo "Updating version to $version"
