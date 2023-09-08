@@ -885,7 +885,7 @@ async fn main() {
         } else if args.list {
             list_langs();
         } else if args.config {
-            let mut config = config::Config::new(args.api_key, args.project_id, args.access_token);
+            let config = config::Config::new(args.api_key, args.project_id, args.access_token);
             config::setup(config);
         } else {
             let run_args = program::Args {
