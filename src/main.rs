@@ -86,16 +86,23 @@ mod translator {
         key: String,
     }
 
-    pub async fn translate_text(formatted_content: Vec<(usize, String)>) -> Result<Vec<(usize, String)>, reqwest::Error> {
+    #[derive(Debug, Clone)]
+    pub struct TranslateInput {
+        pub formatted_content: Vec<(usize, String)>,
+        pub source: String,
+        pub target: String,
+    }
+
+    pub async fn translate_text(input: TranslateInput) -> Result<Vec<(usize, String)>, reqwest::Error> {
         let config: config::Config = config::Config::load().expect("Failed to load configuration");
         let client = reqwest::Client::new();
         let mut translated_texts = Vec::new();
     
-        for (line_number, line) in formatted_content {
+        for (line_number, line) in input.formatted_content {
             let mut payload = HashMap::new();
             payload.insert("q", line.clone());
-            payload.insert("source", "en".to_string());
-            payload.insert("target", "sv".to_string());
+            payload.insert("source", input.source.clone());
+            payload.insert("target", input.target.clone());
             payload.insert("format", "text".to_string());
             payload.insert("key", config.get_api_key());
     
@@ -487,11 +494,32 @@ mod program {
     use crate::pdf_reader;
     use crate::translator;
 
+    pub struct Args {
+        pub file_path: String,
+        pub source: String,
+        pub target: String,
+    }
     
-    pub async fn run(file_path: String) {
-        let pdf_reader = pdf_reader::PdfReader::new(file_path.as_str()).expect("Error reading pdf");
+    pub async fn run(mut args: Args) {
+        let pdf_reader = pdf_reader::PdfReader::new(args.file_path.as_str()).expect("Error reading pdf");
+
+        if args.source.is_empty() {
+            println!("No source language provided, defaulting to 'en'");
+            args.source = "en".to_string();
+        }
+
+        if args.target.is_empty() {
+            println!("No target language provided, defaulting to 'sv'");
+            args.target = "sv".to_string();
+        }
+
+        let request = translator::TranslateInput {
+            formatted_content: pdf_reader.get_content(),
+            source: args.source,
+            target: args.target,
+        };
     
-        match translator::translate_text(pdf_reader.get_content()).await {
+        match translator::translate_text(request).await {
             Ok(translated_content) => {
                 let mut file = File::create("translated_text.txt").expect("Error creating file");
                 for (line_number, line) in translated_content {
@@ -505,11 +533,158 @@ mod program {
 }
 
 use clap::Parser;
+
+static SUPPORTED_LANGUAGES: &[( &'static str, &'static str)] = &[
+    ("Afrikaans", "af"),
+    ("Albanian", "sq"),
+    ("Amharic", "am"),
+    ("Arabic", "ar"),
+    ("Armenian", "hy"),
+    ("Assamese", "as"),
+    ("Aymara", "ay"),
+    ("Azerbaijani", "az"),
+    ("Bambara", "bm"),
+    ("Basque", "eu"),
+    ("Belarusian", "be"),
+    ("Bengali", "bn"),
+    ("Bhojpuri", "bho"),
+    ("Bosnian", "bs"),
+    ("Bulgarian", "bg"),
+    ("Catalan", "ca"),
+    ("Cebuano", "ceb"),
+    ("Chinese (Simplified)", "zh-CN or zh"),
+    ("Chinese (Traditional)", "zh-TW"),
+    ("Corsican", "co"),
+    ("Czech", "cs"),
+    ("Danish", "da"),
+    ("Dhivehi", "dv"),
+    ("Dogri", "doi"),
+    ("Dutch", "nl"),
+    ("English", "en"),
+    ("Esperanto", "eo"),
+    ("Estonian", "et"),
+    ("Ewe", "ee"),
+    ("Filipino (Tagalog)", "fil"),
+    ("Finnish", "fi"),
+    ("French", "fr"),
+    ("Frisian", "fy"),
+    ("Galician", "gl"),
+    ("Georgian", "ka"),
+    ("German", "de"),
+    ("Greek", "el"),
+    ("Guarani", "gn"),
+    ("Gujarati", "gu"),
+    ("Haitian Creole", "ht"),
+    ("Hausa", "ha"),
+    ("Hawaiian", "haw"),
+    ("Hebrew", "he or iw"),
+    ("Hindi", "hi"),
+    ("Hmong", "hmn"),
+    ("Hungarian", "hu"),
+    ("Hebrew", "he or iw"),
+    ("Hindi", "hi"),
+    ("Hmong", "hmn"),
+    ("Hungarian", "hu"),
+    ("Icelandic", "is"),
+    ("Igbo", "ig"),
+    ("Ilocano", "ilo"),
+    ("Indonesian", "id"),
+    ("Irish", "ga"),
+    ("Italian", "it"),
+    ("Japanese", "ja"),
+    ("Javanese", "jv or jw"),
+    ("Kannada", "kn"),
+    ("Kazakh", "kk"),
+    ("Khmer", "km"),
+    ("Kinyarwanda", "rw"),
+    ("Konkani", "gom"),
+    ("Korean", "ko"),
+    ("Krio", "kri"),
+    ("Kurdish", "ku"),
+    ("Kurdish (Sorani)", "ckb"),
+    ("Kyrgyz", "ky"),
+    ("Lao", "lo"),
+    ("Latin", "la"),
+    ("Latvian", "lv"),
+    ("Lingala", "ln"),
+    ("Lithuanian", "lt"),
+    ("Luganda", "lg"),
+    ("Luxembourgish", "lb"),
+    ("Macedonian", "mk"),
+    ("Maithili", "mai"),
+    ("Malagasy", "mg"),
+    ("Malay", "ms"),
+    ("Malayalam", "ml"),
+    ("Maltese", "mt"),
+    ("Maori", "mi"),
+    ("Marathi", "mr"),
+    ("Meiteilon (Manipuri)", "mni-Mtei"),
+    ("Mizo", "lus"),
+    ("Mongolian", "mn"),
+    ("Myanmar (Burmese)", "my"),
+    ("Nepali", "ne"),
+    ("Norwegian", "no"),
+    ("Nyanja (Chichewa)", "ny"),
+    ("Odia (Oriya)", "or"),
+    ("Oromo", "om"),
+    ("Pashto", "ps"),
+    ("Persian", "fa"),
+    ("Polish", "pl"),
+    ("Portuguese (Portugal, Brazil)", "pt"),
+    ("Punjabi", "pa"),
+    ("Quechua", "qu"),
+    ("Romanian", "ro"),
+    ("Russian", "ru"),
+    ("Samoan", "sm"),
+    ("Sanskrit", "sa"),
+    ("Scots Gaelic", "gd"),
+    ("Sepedi", "nso"),
+    ("Serbian", "sr"),
+    ("Sesotho", "st"),
+    ("Shona", "sn"),
+    ("Sindhi", "sd"),
+    ("Sinhala (Sinhalese)", "si"),
+    ("Slovak", "sk"),
+    ("Slovenian", "sl"),
+    ("Somali", "so"),
+    ("Spanish", "es"),
+    ("Sundanese", "su"),
+    ("Swahili", "sw"),
+    ("Swedish", "sv"),
+    ("Tagalog (Filipino)", "tl"),
+    ("Tajik", "tg"),
+    ("Tamil", "ta"),
+    ("Tatar", "tt"),
+    ("Telugu", "te"),
+    ("Thai", "th"),
+    ("Tigrinya", "ti"),
+    ("Tsonga", "ts"),
+    ("Turkish", "tr"),
+    ("Turkmen", "tk"),
+    ("Twi (Akan)", "ak"),
+    ("Ukrainian", "uk"),
+    ("Urdu", "ur"),
+    ("Uyghur", "ug"),
+    ("Uzbek", "uz"),
+    ("Vietnamese", "vi"),
+    ("Welsh", "cy"),
+    ("Xhosa", "xh"),
+    ("Yiddish", "yi"),
+    ("Yoruba", "yo"),
+    ("Zulu", "zu")
+];
+
 #[derive(Parser, Debug, Clone)]
 #[command(author, version, about, name = "pdf-translator")]
 struct Args {
     #[arg(short, long, long_help = "The path to the pdf file you want to translate")]
     path: Option<String>,
+    #[arg(short, long, default_value = "en", long_help = "The source language of the pdf file")]
+    source: String,
+    #[arg(short, long, default_value = "sv", long_help = "The target language of the output text")]
+    target: String,
+    #[arg(long, default_value = "false", long_help = "Prints the list of supported languages")]
+    list: bool,
     #[arg(short, long, default_value = "false", long_help = "Install poppler on your system, requires sudo or root access\nCurrently only works on Linux and MacOS")]
     install: bool,
     #[arg(short, long, default_value = "false", long_help = "Setup the configuration file,\nneeds atleast one of these:\n\t'--api-key'\n\t'--access-token'\n\t'--project-id'")]
@@ -523,6 +698,18 @@ struct Args {
     #[cfg(debug_assertions)]
     #[arg(short, long, default_value = "false", long_help = "Run the program in debug mode,\nneeds a path to a pdf file called 'example.pdf' in the 'test-files' folder")]
     debug: bool,
+}
+
+fn list_langs() {
+    const NAME_WIDTH: usize = 30;
+    const CODE_WIDTH: usize = 12;
+
+    println!("{:<width$} | {:<CODE_WIDTH$}", "Language", "ISO-639 Code", width = NAME_WIDTH);
+    println!("{:-<width$}---{:-<CODE_WIDTH$}", "", "", width = NAME_WIDTH);
+
+    for &(lang, code) in SUPPORTED_LANGUAGES.iter() {
+        println!("{:<width$} -> {:<CODE_WIDTH$}", lang, code, width = NAME_WIDTH);
+    }
 }
 
 
@@ -541,7 +728,13 @@ async fn main() {
         dbg!("{:?}", args.clone());
         dbg!(target_os);
         if args.debug {
-            program::run("./test-files/example.pdf".to_string()).await;
+            let run_args = program::Args {
+                file_path: "./test-files/example.pdf".to_string(),
+                source: "en".to_string(),
+                target: "sv".to_string(),
+            };
+
+            program::run(run_args).await;
         } else if args.install {
             #[cfg(target_os = "linux")]
             {
@@ -565,12 +758,18 @@ async fn main() {
             {
                 println!("The installer for poppler is currently broken on Windows.\nPlease install poppler manually, or use a Linux or MacOS machine.")
             }
+        } else if args.list {
+            list_langs();
         } else if args.config {
             let config = config::Config::new(args.api_key, args.project_id, args.access_token);
             config::setup(config);
         } else {
-            let path = args.path.unwrap();
-            program::run(path).await;
+            let run_args = program::Args{
+                file_path: args.path.unwrap(),
+                source: "en".to_string(),
+                target: "sv".to_string(),
+            };
+            program::run(run_args).await;
         }
     }
     #[cfg(not(debug_assertions))]
@@ -598,12 +797,18 @@ async fn main() {
             {
                 println!("The installer for poppler is currently broken on Windows.\nPlease install poppler manually, or use a Linux or MacOS machine.")
             }
+        } else if args.list {
+            list_langs();
         } else if args.config {
             let mut config = config::Config::new(args.api_key, args.project_id, args.access_token);
             config::setup(config);
         } else {
-            let path = args.path.unwrap();
-            program::run(path).await;
+            let run_args = program::Args{
+                file_path: args.path.unwrap(),
+                source: "en".to_string(),
+                target: "sv".to_string(),
+            };
+            program::run(run_args).await;
         }
     }
 }
