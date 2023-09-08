@@ -7,6 +7,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   IMAGE_NAME: "pdf_translator"
+  NEW_VERSION: "v0.0.0"
 
 jobs:
   build_and_test:
